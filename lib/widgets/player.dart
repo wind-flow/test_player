@@ -1,23 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:miniplayer/miniplayer.dart';
+import 'package:test_player/controller/PlayerController.dart';
 // import 'package:example/main.dart';
 import '../main.dart';
+import '../model/models.dart';
 import '../utils.dart';
 
 final MiniplayerController controller = MiniplayerController();
 
 class DetailedPlayer extends StatelessWidget {
-  final AudioObject audioObject;
+  final Audio audio;
 
-  const DetailedPlayer({Key? key, required this.audioObject}) : super(key: key);
+  const DetailedPlayer({Key? key, required this.audio}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     const double playerMinHeight = 120;
-    double playerMaxHeight = MediaQuery.of(context).size.height;
+    double playerMaxHeight =
+        PlayerController.playerMaxHeight; //MediaQuery.of(context).size.height;
     const miniplayerPercentageDeclaration = 0.2;
 
-    final ValueNotifier<double> playerExpandProgress = ValueNotifier(playerMinHeight);
+    final ValueNotifier<double> playerExpandProgress =
+        ValueNotifier(playerMinHeight);
 
     return Miniplayer(
       valueNotifier: playerExpandProgress,
@@ -32,8 +36,11 @@ class DetailedPlayer extends StatelessWidget {
         final double width = MediaQuery.of(context).size.width;
         final maxImgSize = width;
 
-        final img = Image.network(audioObject.img, fit: BoxFit.contain,);
-        final text = Text(audioObject.title);
+        final img = Image.network(
+          audio.img,
+          fit: BoxFit.contain,
+        );
+        final text = Text(audio.title);
         const buttonPlay = IconButton(
           icon: Icon(Icons.pause),
           onPressed: onTap,
@@ -152,13 +159,13 @@ class DetailedPlayer extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.center,
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Text(audioObject.title,
+                            Text(audio.title,
                                 style: Theme.of(context)
                                     .textTheme
                                     .bodyText2!
                                     .copyWith(fontSize: 16)),
                             Text(
-                              audioObject.subtitle,
+                              audio.subtitle,
                               style: Theme.of(context)
                                   .textTheme
                                   .bodyText2!

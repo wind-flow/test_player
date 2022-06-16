@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 
+import '../model/models.dart';
 import '../utils.dart';
 
-typedef OnTap(AudioObject audioObject);
+typedef OnTap(Audio audioObject);
 
 class AudioListTile extends StatelessWidget {
-  final AudioObject audioObject;
+  final Audio audio;
   final Function onTap;
 
   const AudioListTile(
-      {Key? key, required this.audioObject, required this.onTap})
+      {Key? key, required this.audio, required this.onTap})
       : super(key: key);
 
   @override
@@ -19,15 +20,15 @@ class AudioListTile extends StatelessWidget {
       leading: ClipRRect(
         borderRadius: BorderRadius.circular(4),
         child: Image.network(
-          audioObject.img,
+          audio.img,
           width: 52,
           height: 52,
           fit: BoxFit.contain,
         ),
       ),
-      title: Text(audioObject.title),
+      title: Text(audio.title),
       subtitle: Text(
-        audioObject.subtitle,
+        audio.subtitle,
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
       ),
