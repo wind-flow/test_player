@@ -60,12 +60,13 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ],
           ),
-          Obx(() =>
-            Offstage(
+          Obx(() {
+            print(audioPlayerController.isShowingPlayer.value);
+            return Offstage(
               offstage: !audioPlayerController.isShowingPlayer.value,
               child: DetailedPlayer(audio: audioPlayerController.streams[0]),
-            ),
-          )
+            );
+          })
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -77,7 +78,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       ),
       // bottomNavigationBar: ValueListenableBuilder(
-      //   valueListenable: playerExpandProgress, 
+      //   valueListenable: playerExpandProgress,
       //   builder: (BuildContext context, double height, Widget? child) {
       //     final value = percentageFromValueInRange(
       //         min: playerMinHeight, max: playerMaxHeight, value: height);

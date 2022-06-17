@@ -24,7 +24,7 @@ class DetailedPlayer extends StatelessWidget {
   
   @override
   Widget build(BuildContext context) {
-    double playerMinHeight = AudioPlayerController.playerExpandProgress;
+    double playerMinHeight = 120;
     double playerMaxHeight = AudioPlayerController
         .playerMaxHeight; //MediaQuery.of(context).size.height;
     const miniplayerPercentageDeclaration = 0.2;

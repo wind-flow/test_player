@@ -28,7 +28,7 @@ class AudioUi extends StatelessWidget {
             onTap: () {
               audioPlayerController.currentStreamIndex.value = index;
               audioPlayerController.play();
-              audioPlayerController.isShowingPlayer(true);
+              audioPlayerController.isShowingPlayer.value = true;
               LoggerController.logger.d(audioPlayerController.isShowingPlayer);
               // return AudioListTile(
               //   audio: playController.playAudioList[index],
