@@ -42,7 +42,7 @@ class _MyHomePageState extends State<MyHomePage> {
               AppBar(title: Text('Miniplayer Demo')),
               Expanded(
                 child: AudioUi(
-                  onTap: (audio) => playerController.currentlyPlaying = audio as Rx<Audio?>,//,currentlyPlaying.value = audio,
+                  onTap: (audio) => currentlyPlaying.value = audio,
                 ),
               ),
             ],
