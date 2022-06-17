@@ -1,56 +1,150 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
-import 'package:test_player/controller/PlayerController.dart';
-import '../model/models.dart';
+import 'package:test_player/controller/LoggerController.dart';
+import 'package:test_player/controller/AudioPlayerController.dart';
+import 'package:test_player/widgets/player.dart';
+import '../model/StreamModels.dart';
 import '../widgets/audio_list_tile.dart';
 import 'package:get/get.dart';
 import '../utils.dart';
-
-typedef OnTap(final Audio audio);
-
-const Set<Audio> audioExamples = {
-  Audio('Salt & Pepper', 'Dope Lemon',
-      'https://search.pstatic.net/sunny/?src=http%3A%2F%2Fimg.bemil.chosun.com%2Fnbrd%2Ffiles%2FBEMIL085%2Fupload%2F0568608_1.jpg&type=sc960_832'),
-  Audio('Losing It', 'FISHER',
-      'https://search.pstatic.net/sunny/?src=http%3A%2F%2Fimg.bemil.chosun.com%2Fnbrd%2Ffiles%2FBEMIL085%2Fupload%2F0568608_1.jpg&type=sc960_832'),
-  Audio('American Kids', 'Kenny Chesney',
-      'https://search.pstatic.net/sunny/?src=http%3A%2F%2Fimg.bemil.chosun.com%2Fnbrd%2Ffiles%2FBEMIL085%2Fupload%2F0568608_1.jpg&type=sc960_832'),
-  Audio('Wake Me Up', 'Avicii',
-      'https://search.pstatic.net/sunny/?src=http%3A%2F%2Fimg.bemil.chosun.com%2Fnbrd%2Ffiles%2FBEMIL085%2Fupload%2F0568608_1.jpg&type=sc960_832'),
-  Audio('Missing You', 'Mesto',
-      'https://search.pstatic.net/sunny/?src=http%3A%2F%2Fimg.bemil.chosun.com%2Fnbrd%2Ffiles%2FBEMIL085%2Fupload%2F0568608_1.jpg&type=sc960_832'),
-  Audio('Drop it dirty', 'Tavengo',
-      'https://search.pstatic.net/sunny/?src=https%3A%2F%2Fassets.community.lomography.com%2Fb5%2Fceff057263977a2b613cce71bb2210d91f2c00%2F1200x796x1.jpg%3Fauth%3Da23619696280d4d52facbb414d389dfaca98b785&type=sc960_832'),
-  Audio('Cigarettes', 'Tash Sultana',
-      'https://search.pstatic.net/common/?src=http%3A%2F%2Fblogfiles.naver.net%2F20130329_165%2Fyanagi0221_1364530314015TmE8a_JPEG%2Fjmsdf_dd158_001.jpg&type=sc960_832'),
-  Audio('Ego Death', 'Ty Dolla \$ign, Kanye West, FKA Twigs, Skrillex',
-      'https://search.pstatic.net/common/?src=http%3A%2F%2Fblogfiles.naver.net%2F20130329_165%2Fyanagi0221_1364530314015TmE8a_JPEG%2Fjmsdf_dd158_001.jpg&type=sc960_832'),
-};
+import 'package:sizer/sizer.dart';
+// typedef OnTap(final Audio audio);
 
 class AudioUi extends StatelessWidget {
-  final OnTap onTap;
-
-  const AudioUi({Key? key, required this.onTap}) : super(key: key);
+  const AudioUi({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final playController = Get.put(PlayerController());
-    // return ListView.builder(
-    //     itemCount: playController.playAudioList.length,
-    //     itemBuilder: ((context, index) {
-    //       return AudioListTile(
-    //           audio: playController.playAudioList[index],
-    //           onTap: onTap(playController.playAudioList[index]));
-    //     }));
-    return ListView(
-      padding: const EdgeInsets.all(0),
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 10, bottom: 6, top: 15),
-          child: Text('Your Library:'),
-        ),
-        for (Audio a in audioExamples)
-          AudioListTile(audio: a, onTap: () => onTap(a))
-      ],
+    final audioPlayerController = Get.put(AudioPlayerController());
+    return Obx(
+      () => ListView.builder(
+        itemCount: audioPlayerController.streams.length,
+        physics: const BouncingScrollPhysics(),
+        itemBuilder: ((context, index) {
+          return InkWell(
+            borderRadius: BorderRadius.all(
+              Radius.circular(10.sp),
+            ),
+            onTap: () {
+              audioPlayerController.currentStreamIndex.value = index;
+              audioPlayerController.play();
+              audioPlayerController.isShowingPlayer(true);
+              LoggerController.logger.d(audioPlayerController.isShowingPlayer);
+              // return AudioListTile(
+              //   audio: playController.playAudioList[index],
+              // );
+              // onTap: onTap(playController.playAudioList[index]));
+              audioPlayerController.playState.value = PlayerState.playing;
+            },
+            child: Obx(
+              () => Container(
+                height: 52.sp,
+                decoration: BoxDecoration(
+                  color: (audioPlayerController.currentStreamIndex.value == index)
+                      ? Color(0xFF2A2A2A)
+                      : Colors.transparent,
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(10.sp),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 13.sp),
+                      child: Container(
+                        height: 35.sp,
+                        width: 35.sp,
+                        child: ClipRRect(
+                          borderRadius:
+                              BorderRadius.all(Radius.circular(15.sp)),
+                          child: Image.network(
+                            audioPlayerController.streams[index].picture!,
+                            frameBuilder: (BuildContext context, Widget child,
+                                int? frame, bool wasSynchronouslyLoaded) {
+                              return (frame != null)
+                                  ? child
+                                  : Padding(
+                                      padding: EdgeInsets.all(8.sp),
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 5.sp,
+                                        color: Color(0xFF71B77A),
+                                      ),
+                                    );
+                            },
+                            errorBuilder: (context, error, stackTrace) {
+                              return Container(
+                                color: Color(0xFF71B77A),
+                                child: Center(
+                                  child: Text("404"),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                    ),
+                    Flexible(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisSize: MainAxisSize.max,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                audioPlayerController.streams[index].composer!,
+                                style: TextStyle(
+                                  fontSize: 13.sp,
+                                  color: Color(0xFFACACAC),
+                                  fontWeight: FontWeight.w300,
+                                  fontFamily: "Segoe UI",
+                                ),
+                              ),
+                              Padding(
+                                padding: EdgeInsets.only(right: 15.sp),
+                                child: Text(
+                                  audioPlayerController.streams[index].long!,
+                                  style: TextStyle(
+                                    fontSize: 13.sp,
+                                    color: Color(0xFFACACAC),
+                                    fontWeight: FontWeight.w300,
+                                    fontFamily: "Segoe UI",
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
+                          Text(
+                            audioPlayerController.streams[index].title!,
+                            style: TextStyle(
+                              fontSize: 14.sp,
+                              color: Colors.white,
+                              fontWeight: FontWeight.w400,
+                              fontFamily: "Segoe UI",
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            ),
+          );
+        }),
+      ),
     );
+    // return ListView(
+    //   padding: const EdgeInsets.all(0),
+    //   children: [
+    //     Padding(
+    //       padding: const EdgeInsets.only(left: 10, bottom: 6, top: 15),
+    //       child: Text('Your Library:'),
+    //     ),
+    //     for (Audio a in audioExamples)
+    //       AudioListTile(audio: a, onTap: () => onTap(a))
+    //   ],
+    // );
   }
 }

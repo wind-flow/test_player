@@ -1,23 +1,32 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 import 'package:miniplayer/miniplayer.dart';
-import 'package:test_player/controller/PlayerController.dart';
+import 'package:test_player/controller/AudioPlayerController.dart';
+import 'package:test_player/controller/LoggerController.dart';
 // import 'package:example/main.dart';
 import '../main.dart';
-import '../model/models.dart';
+import '../model/StreamModels.dart';
 import '../utils.dart';
+import 'package:get/get.dart';
 
-final MiniplayerController controller = MiniplayerController();
+
 
 class DetailedPlayer extends StatelessWidget {
-  final Audio audio;
+  final Stream audio;
 
-  const DetailedPlayer({Key? key, required this.audio}) : super(key: key);
+  DetailedPlayer({
+    Key? key,
+    required this.audio,
+  }) : super(key: key);
 
+  var audioPlayerController = Get.put(AudioPlayerController());
+  final MiniplayerController controller = MiniplayerController();
+  
   @override
   Widget build(BuildContext context) {
-    const double playerMinHeight = 120;
-    double playerMaxHeight =
-        PlayerController.playerMaxHeight; //MediaQuery.of(context).size.height;
+    double playerMinHeight = AudioPlayerController.playerExpandProgress;
+    double playerMaxHeight = AudioPlayerController
+        .playerMaxHeight; //MediaQuery.of(context).size.height;
     const miniplayerPercentageDeclaration = 0.2;
 
     final ValueNotifier<double> playerExpandProgress =
@@ -29,7 +38,11 @@ class DetailedPlayer extends StatelessWidget {
       maxHeight: playerMaxHeight,
       controller: controller,
       elevation: 4,
-      onDismissed: () => currentlyPlaying.value = null,
+      onDismissed: () {
+        currentlyPlaying.value = null;
+        audioPlayerController.isShowingPlayer(false);
+        LoggerController.logger.d(audioPlayerController.isShowingPlayer);
+      },
       curve: Curves.easeOut,
       builder: (height, percentage) {
         final bool miniplayer = percentage < miniplayerPercentageDeclaration;
@@ -37,15 +50,15 @@ class DetailedPlayer extends StatelessWidget {
         final maxImgSize = width;
 
         final img = Image.network(
-          audio.img,
+          audio.picture!,
           fit: BoxFit.contain,
         );
-        final text = Text(audio.title);
+        final text = Text(audio.title!);
         const buttonPlay = IconButton(
           icon: Icon(Icons.pause),
           onPressed: onTap,
         );
-        final progressIndicator = LinearProgressIndicator(value: 0.3);
+        const progressIndicator = LinearProgressIndicator(value: 0.3);
 
         //Declare additional widgets (eg. SkipButton) and variables
         if (!miniplayer) {
@@ -69,14 +82,14 @@ class DetailedPlayer extends StatelessWidget {
               2;
 
           const buttonSkipForward = IconButton(
-            icon: Icon(Icons.forward_30),
-            iconSize: 33,
-            onPressed: onTap,
+            icon: Icon(Icons.forward_10),
+            iconSize: 35,
+            onPressed: onTap, //audioPlayerController.movePosition(10, '+'),
           );
           const buttonSkipBackwards = IconButton(
             icon: Icon(Icons.replay_10),
-            iconSize: 33,
-            onPressed: onTap,
+            iconSize: 35,
+            onPressed: onTap, //audioPlayerController.movePosition(10, '-'),
           );
           const buttonPlayExpanded = IconButton(
             icon: Icon(Icons.pause_circle_filled),
@@ -159,13 +172,13 @@ class DetailedPlayer extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.center,
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Text(audio.title,
+                            Text(audio.title!,
                                 style: Theme.of(context)
                                     .textTheme
                                     .bodyText2!
                                     .copyWith(fontSize: 16)),
                             Text(
-                              audio.subtitle,
+                              audio.composer!,
                               style: Theme.of(context)
                                   .textTheme
                                   .bodyText2!
@@ -183,7 +196,7 @@ class DetailedPlayer extends StatelessWidget {
                     ),
                   ),
                   IconButton(
-                      icon: Icon(Icons.fullscreen),
+                      icon: const Icon(Icons.fullscreen),
                       onPressed: () {
                         controller.animateToHeight(state: PanelState.MAX);
                       }),

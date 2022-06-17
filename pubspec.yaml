@@ -36,6 +36,13 @@ dependencies:
   cupertino_icons: ^1.0.2
   miniplayer: ^1.0.1
   get: ^4.6.5
+  logger: ^1.1.0
+  sizer: ^2.0.15
+  device_preview: ^1.1.0
+  audioplayers: ^1.0.0
+  video_player: ^2.4.5
+  file_picker: ^3.0.4
+  shared_preferences: ^2.0.15
 
 dev_dependencies:
   flutter_test:

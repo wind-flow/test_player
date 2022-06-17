@@ -1,24 +1,39 @@
+import 'package:audioplayers/audioplayers.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:test_player/controller/PlayerController.dart';
-import 'model/models.dart';
+import 'package:sizer/sizer.dart';
+import 'package:test_player/controller/LoggerController.dart';
+import 'package:test_player/controller/AudioPlayerController.dart';
+import 'model/StreamModels.dart';
 import 'screens/audio_screen.dart';
 import 'widgets/player.dart';
 import 'utils.dart';
 import 'package:get/get.dart';
+import 'package:device_preview/device_preview.dart';
 
-ValueNotifier<Audio?> currentlyPlaying = ValueNotifier(null);
+ValueNotifier<Stream?> currentlyPlaying = ValueNotifier(null);
 
-void main() => runApp(MyApp());
+void main() => runApp(
+      DevicePreview(
+        enabled: !kReleaseMode,
+        builder: (context) => MyApp(), // Wrap your app
+      ),
+    );
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
-      title: 'Miniplayer Demo',
-      theme: ThemeData.light(),
-      darkTheme: ThemeData.dark(),
-      home: MyHomePage(),
-    );
+    return Sizer(builder: (context, orientation, deviceType) {
+      return GetMaterialApp(
+        title: 'Miniplayer Demo',
+        theme: ThemeData.light(),
+        darkTheme: ThemeData.dark(),
+        locale: DevicePreview.locale(context),
+        builder: DevicePreview.appBuilder,
+        useInheritedMediaQuery: true,
+        home: MyHomePage(),
+      );
+    });
   }
 }
 
@@ -32,7 +47,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
-    final playerController = Get.put(PlayerController());
+    final audioPlayerController = Get.put(AudioPlayerController());
 
     return Scaffold(
       body: Stack(
@@ -41,33 +56,28 @@ class _MyHomePageState extends State<MyHomePage> {
             children: [
               AppBar(title: Text('Miniplayer Demo')),
               Expanded(
-                child: AudioUi(
-                  onTap: (audio) => playerController.currentlyPlaying = audio as Rx<Audio?>,//,currentlyPlaying.value = audio,
-                ),
+                child: AudioUi(),
               ),
             ],
           ),
-          // DetailedPlayer(audio: playerController.currentlyPlaying.value!),
-          // DetailedPlayer(audio: playerController.currentlyPlaying.value!)
-          ValueListenableBuilder(
-            valueListenable: currentlyPlaying,
-            builder: (BuildContext context, Audio? audio, Widget? child) =>
-                audio != null ? DetailedPlayer(audio: audio) : Container(),
-          ),
+          Obx(() =>
+            Offstage(
+              offstage: !audioPlayerController.isShowingPlayer.value,
+              child: DetailedPlayer(audio: audioPlayerController.streams[0]),
+            ),
+          )
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
-          currentIndex: 0,
-          selectedItemColor: Colors.blue,
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(icon: Icon(Icons.audiotrack), label: 'Audio'),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.videocam), label: 'Video'),
-          ],
-        ),
-      
+        currentIndex: 0,
+        selectedItemColor: Colors.blue,
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(icon: Icon(Icons.audiotrack), label: 'Audio'),
+          BottomNavigationBarItem(icon: Icon(Icons.videocam), label: 'Video'),
+        ],
+      ),
       // bottomNavigationBar: ValueListenableBuilder(
-      //   valueListenable: playerExpandProgress,
+      //   valueListenable: playerExpandProgress, 
       //   builder: (BuildContext context, double height, Widget? child) {
       //     final value = percentageFromValueInRange(
       //         min: playerMinHeight, max: playerMaxHeight, value: height);
