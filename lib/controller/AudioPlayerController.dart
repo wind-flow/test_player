@@ -48,6 +48,9 @@ class AudioPlayerController extends GetxController {
       final file = File(result.files.single.path!);
       _advancedPlayer.setSourceDeviceFile(file.path);
     }
+
+    await _advancedPlayer.setVolume(0.3);
+    await _advancedPlayer.setPlaybackRate(1);
   }
 
   //play

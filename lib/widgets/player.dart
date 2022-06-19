@@ -121,19 +121,23 @@ class DetailedPlayer extends StatelessWidget {
                         ),
                         Flexible(
                           child: Slider(
-                              activeColor: Color(0xFF71B77A),
-                              inactiveColor: Color(0xFFEFEFEF),
-                              value: audioPlayerController
-                                  .position.value.inSeconds
-                                  .toDouble(),
-                              min: 0.0,
-                              max: audioPlayerController
-                                      .duration.value.inSeconds
-                                      .toDouble() +
-                                  1.0,
-                              onChanged: (double value) {
-                                audioPlayerController.setPositionValue = value;
-                              }),
+                            activeColor: Color(0xFF71B77A),
+                            inactiveColor: Color(0xFFEFEFEF),
+                            value: audioPlayerController
+                                .position.value.inSeconds
+                                .toDouble(),
+                            min: 0.0,
+                            max: audioPlayerController.duration.value.inSeconds
+                                    .toDouble() +
+                                1.0,
+                            onChanged: (double value) {
+                              audioPlayerController.setPositionValue = value;
+                            },
+                            // onChangeEnd: (double value) {
+                            //   audioPlayerController.setPositionValue = value;
+                            //   // await audioPlayerController.resume();
+                            // },
+                          ),
                         ),
                         Container(),
                         Container(),
