@@ -1,12 +1,7 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
-import 'package:test_player/controller/LoggerController.dart';
 import 'package:test_player/controller/AudioPlayerController.dart';
-import 'package:test_player/widgets/player.dart';
-import '../model/StreamModels.dart';
-import '../widgets/audio_list_tile.dart';
 import 'package:get/get.dart';
-import '../utils.dart';
 import 'package:sizer/sizer.dart';
 // typedef OnTap(final Audio audio);
 
@@ -29,20 +24,15 @@ class AudioUi extends StatelessWidget {
               audioPlayerController.currentStreamIndex.value = index;
               audioPlayerController.play();
               audioPlayerController.isShowingPlayer.value = true;
-              LoggerController.logger.d(audioPlayerController.isShowingPlayer);
-              // return AudioListTile(
-              //   audio: playController.playAudioList[index],
-              // );
-              // onTap: onTap(playController.playAudioList[index]));
-              audioPlayerController.playState.value = PlayerState.playing;
             },
             child: Obx(
               () => Container(
                 height: 52.sp,
                 decoration: BoxDecoration(
-                  color: (audioPlayerController.currentStreamIndex.value == index)
-                      ? Color(0xFF2A2A2A)
-                      : Colors.transparent,
+                  color:
+                      (audioPlayerController.currentStreamIndex.value == index)
+                          ? Color(0xFF2A2A2A)
+                          : Colors.transparent,
                   borderRadius: BorderRadius.all(
                     Radius.circular(10.sp),
                   ),
@@ -135,16 +125,5 @@ class AudioUi extends StatelessWidget {
         }),
       ),
     );
-    // return ListView(
-    //   padding: const EdgeInsets.all(0),
-    //   children: [
-    //     Padding(
-    //       padding: const EdgeInsets.only(left: 10, bottom: 6, top: 15),
-    //       child: Text('Your Library:'),
-    //     ),
-    //     for (Audio a in audioExamples)
-    //       AudioListTile(audio: a, onTap: () => onTap(a))
-    //   ],
-    // );
   }
 }

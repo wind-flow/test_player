@@ -1,8 +1,11 @@
+import 'dart:io';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'dart:ui' as ui;
 import 'package:audioplayers/audioplayers.dart';
-import 'package:get/get.dart';
+import 'package:test_player/controller/LoggerController.dart';
 import 'package:test_player/controller/StreamController.dart';
 import 'package:test_player/model/StreamModels.dart';
 
@@ -11,31 +14,40 @@ class AudioPlayerController extends GetxController {
 
   static double playerExpandProgress = 80.toDouble();
   static double playerMaxHeight =
-      (ui.window.physicalSize.height / ui.window.devicePixelRatio);
+      MediaQueryData.fromWindow(WidgetsBinding.instance.window).size.height;
+  //     (ui.window.physicalSize.height / ui.window.devicePixelRatio);
   static const double miniplayerPercentageDeclaration = 0.2;
 
   Rx<Duration> duration = const Duration(seconds: 0).obs;
   Rx<Duration> position = const Duration(seconds: 0).obs;
   Rx<int> currentStreamIndex = 0.obs;
   Rx<PlayerState> playState = PlayerState.stopped.obs;
-
+  RxBool isPlaying = false.obs;
   RxList<Stream> streams = <Stream>[].obs;
   RxBool isShowingPlayer = false.obs;
-  
+
   @override
-  void onInit() {
+  void onInit() async {
     // TODO: implement onInit
     super.onInit();
 
     final streamController = Get.put(StreamController());
     streams = streamController.streams;
+    final result = await FilePicker.platform.pickFiles();
 
     _advancedPlayer.onDurationChanged.listen((d) => duration.value = d);
     _advancedPlayer.onPositionChanged.listen((p) => position.value = p);
-    _advancedPlayer.onPlayerStateChanged
-        .listen((PlayerState state) => playState.value = state);
+    _advancedPlayer.onPlayerStateChanged.listen((PlayerState state) {
+      isPlaying.value = state == PlayerState.playing;
+    });
+
     _advancedPlayer.onPlayerComplete
         .listen((event) => position.value = duration.value);
+
+    if (result != null) {
+      final file = File(result.files.single.path!);
+      _advancedPlayer.setSourceDeviceFile(file.path);
+    }
   }
 
   //play
@@ -55,17 +67,20 @@ class AudioPlayerController extends GetxController {
   //play
   void resume() async {
     await _advancedPlayer.resume();
+    playState.value = PlayerState.playing;
   }
 
   //pause
   void pause() async {
     await _advancedPlayer.pause();
+    playState.value = PlayerState.paused;
   }
 
   //stop
   void stop() async {
     await _advancedPlayer.stop();
     position.value = Duration(seconds: 0);
+    playState.value = PlayerState.stopped;
   }
 
   void next() {
@@ -87,6 +102,15 @@ class AudioPlayerController extends GetxController {
     } else {
       _advancedPlayer
           .seek(Duration(seconds: (position.value.inSeconds + value.toInt())));
+    }
+  }
+
+  void setAudio() async {
+    final result = await FilePicker.platform.pickFiles();
+
+    if (result != null) {
+      final file = File(result.files.single.path!);
+      _advancedPlayer.setSourceDeviceFile(file.path);
     }
   }
 

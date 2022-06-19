@@ -1,15 +1,9 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 import 'package:miniplayer/miniplayer.dart';
 import 'package:test_player/controller/AudioPlayerController.dart';
-import 'package:test_player/controller/LoggerController.dart';
-// import 'package:example/main.dart';
-import '../main.dart';
 import '../model/StreamModels.dart';
 import '../utils.dart';
 import 'package:get/get.dart';
-
-
 
 class DetailedPlayer extends StatelessWidget {
   final Stream audio;
@@ -19,15 +13,14 @@ class DetailedPlayer extends StatelessWidget {
     required this.audio,
   }) : super(key: key);
 
-  var audioPlayerController = Get.put(AudioPlayerController());
+  final audioPlayerController = Get.put(AudioPlayerController());
   final MiniplayerController controller = MiniplayerController();
-  
+
   @override
   Widget build(BuildContext context) {
-    double playerMinHeight = 120;
-    double playerMaxHeight = AudioPlayerController
-        .playerMaxHeight; //MediaQuery.of(context).size.height;
-    const miniplayerPercentageDeclaration = 0.2;
+    double playerMinHeight = MediaQuery.of(context).size.height * 0.1;
+    double playerMaxHeight = AudioPlayerController.playerMaxHeight;
+    const miniplayerPercentageDeclaration = 0.1;
 
     final ValueNotifier<double> playerExpandProgress =
         ValueNotifier(playerMinHeight);
@@ -39,9 +32,8 @@ class DetailedPlayer extends StatelessWidget {
       controller: controller,
       elevation: 4,
       onDismissed: () {
-        currentlyPlaying.value = null;
+        audioPlayerController.stop();
         audioPlayerController.isShowingPlayer(false);
-        LoggerController.logger.d(audioPlayerController.isShowingPlayer);
       },
       curve: Curves.easeOut,
       builder: (height, percentage) {
@@ -54,11 +46,8 @@ class DetailedPlayer extends StatelessWidget {
           fit: BoxFit.contain,
         );
         final text = Text(audio.title!);
-        const buttonPlay = IconButton(
-          icon: Icon(Icons.pause),
-          onPressed: onTap,
-        );
-        const progressIndicator = LinearProgressIndicator(value: 0.3);
+        var progressIndicator = LinearProgressIndicator(
+            value: audioPlayerController.position.value.inSeconds.toDouble());
 
         //Declare additional widgets (eg. SkipButton) and variables
         if (!miniplayer) {
@@ -80,22 +69,6 @@ class DetailedPlayer extends StatelessWidget {
                 percentage: percentageExpandedPlayer,
               ) /
               2;
-
-          const buttonSkipForward = IconButton(
-            icon: Icon(Icons.forward_10),
-            iconSize: 35,
-            onPressed: onTap, //audioPlayerController.movePosition(10, '+'),
-          );
-          const buttonSkipBackwards = IconButton(
-            icon: Icon(Icons.replay_10),
-            iconSize: 35,
-            onPressed: onTap, //audioPlayerController.movePosition(10, '-'),
-          );
-          const buttonPlayExpanded = IconButton(
-            icon: Icon(Icons.pause_circle_filled),
-            iconSize: 50,
-            onPressed: onTap,
-          );
 
           return Column(
             children: [
@@ -125,13 +98,43 @@ class DetailedPlayer extends StatelessWidget {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              buttonSkipBackwards,
-                              buttonPlayExpanded,
-                              buttonSkipForward
+                              IconButton(
+                                icon: Icon(Icons.replay_10),
+                                iconSize: 35,
+                                onPressed: () =>
+                                    audioPlayerController.movePosition(10, '+'),
+                              ),
+                              IconButton(
+                                icon: Icon(Icons.pause_circle_filled),
+                                iconSize: 50,
+                                onPressed: () =>
+                                    audioPlayerController.smartPlay(),
+                              ),
+                              IconButton(
+                                icon: Icon(Icons.forward_10),
+                                iconSize: 35,
+                                onPressed: () =>
+                                    audioPlayerController.movePosition(10, '+'),
+                              ),
                             ],
                           ),
                         ),
-                        Flexible(child: progressIndicator),
+                        Flexible(
+                          child: Slider(
+                              activeColor: Color(0xFF71B77A),
+                              inactiveColor: Color(0xFFEFEFEF),
+                              value: audioPlayerController
+                                  .position.value.inSeconds
+                                  .toDouble(),
+                              min: 0.0,
+                              max: audioPlayerController
+                                      .duration.value.inSeconds
+                                      .toDouble() +
+                                  1.0,
+                              onChanged: (double value) {
+                                audioPlayerController.setPositionValue = value;
+                              }),
+                        ),
                         Container(),
                         Container(),
                       ],
@@ -204,7 +207,17 @@ class DetailedPlayer extends StatelessWidget {
                     padding: const EdgeInsets.only(right: 3),
                     child: Opacity(
                       opacity: elementOpacity,
-                      child: buttonPlay,
+                      child: Obx(
+                        () => IconButton(
+                            icon: Icon(
+                              audioPlayerController.isPlaying.value
+                                  ? Icons.pause
+                                  : Icons.play_arrow,
+                            ),
+                            onPressed: () async {
+                              audioPlayerController.smartPlay();
+                            }),
+                      ),
                     ),
                   ),
                 ],
