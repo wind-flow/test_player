@@ -9,11 +9,15 @@ import 'widgets/player.dart';
 import 'package:get/get.dart';
 import 'package:device_preview/device_preview.dart';
 
+// void main() => runApp(
+//       DevicePreview(
+//         enabled: !kReleaseMode,
+//         builder: (context) => const MyApp(), // Wrap your app
+//       ),
+//     );
+
 void main() => runApp(
-      DevicePreview(
-        enabled: !kReleaseMode,
-        builder: (context) => const MyApp(), // Wrap your app
-      ),
+      const MyApp(),
     );
 
 class MyApp extends StatelessWidget {
@@ -23,7 +27,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return Sizer(builder: (context, orientation, deviceType) {
       return GetMaterialApp(
-        title: 'Miniplayer Demo',
+        title: 'DD Player',
         theme: ThemeData.light(),
         darkTheme: ThemeData.dark(),
         locale: DevicePreview.locale(context),
@@ -52,7 +56,7 @@ class _MyHomePageState extends State<MyHomePage> {
         children: [
           Column(
             children: [
-              AppBar(title: Text('Miniplayer Demo')),
+              AppBar(title: Text('DD Player')),
               Expanded(
                 child: AudioUi(),
               ),
@@ -63,8 +67,9 @@ class _MyHomePageState extends State<MyHomePage> {
               return LimitedBox(
                   maxHeight: AudioPlayerController.playerMaxHeight,
                   maxWidth: MediaQuery.of(context).size.width,
-                  child:
-                      DetailedPlayer(audio: audioPlayerController.streams[0]));
+                  child: DetailedPlayer(
+                      audio: audioPlayerController.streams[
+                          audioPlayerController.currentStreamIndex.value]));
             else
               return Container();
           })

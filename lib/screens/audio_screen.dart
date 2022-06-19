@@ -21,8 +21,9 @@ class AudioUi extends StatelessWidget {
               Radius.circular(10.sp),
             ),
             onTap: () {
-              audioPlayerController.currentStreamIndex.value = index;
-              audioPlayerController.play();
+              if (audioPlayerController.currentStreamIndex.value != index)
+                audioPlayerController.currentStreamIndex.value = index;
+              audioPlayerController.smartPlay();
               audioPlayerController.isShowingPlayer.value = true;
             },
             child: Obx(

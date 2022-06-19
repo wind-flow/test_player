@@ -33,7 +33,7 @@ class AudioPlayerController extends GetxController {
 
     final streamController = Get.put(StreamController());
     streams = streamController.streams;
-    final result = await FilePicker.platform.pickFiles();
+    // final result = await FilePicker.platform.pickFiles();
 
     _advancedPlayer.onDurationChanged.listen((d) => duration.value = d);
     _advancedPlayer.onPositionChanged.listen((p) => position.value = p);
@@ -44,10 +44,10 @@ class AudioPlayerController extends GetxController {
     _advancedPlayer.onPlayerComplete
         .listen((event) => position.value = duration.value);
 
-    if (result != null) {
-      final file = File(result.files.single.path!);
-      _advancedPlayer.setSourceDeviceFile(file.path);
-    }
+    // if (result != null) {
+    //   final file = File(result.files.single.path!);
+    //   _advancedPlayer.setSourceDeviceFile(file.path);
+    // }
 
     await _advancedPlayer.setVolume(0.3);
     await _advancedPlayer.setPlaybackRate(1);
@@ -109,12 +109,17 @@ class AudioPlayerController extends GetxController {
   }
 
   void setAudio() async {
-    final result = await FilePicker.platform.pickFiles();
+    // final result = await FilePicker.platform.pickFiles();
 
-    if (result != null) {
-      final file = File(result.files.single.path!);
-      _advancedPlayer.setSourceDeviceFile(file.path);
-    }
+    // if (result != null) {
+    //   final file = File(result.files.single.path!);
+    //   _advancedPlayer.setSourceDeviceFile(file.path);
+    // }
+
+    var url =
+        'https://mp3l.jamendo.com/?trackid=1883450&format=mp31&from=c0s9nvpfEfRsUsG67crJOg%3D%3D%7CS7btAC1Vtvt5dLWkhxZNRQ%3D%3D';
+
+    _advancedPlayer.setSourceUrl(url);
   }
 
   void onTab() {}
