@@ -36,11 +36,8 @@ class AudioPlayerController extends GetxController {
     _advancedPlayer.onDurationChanged.listen((d) => duration.value = d);
     _advancedPlayer.onPositionChanged.listen((p) => position.value = p);
     _advancedPlayer.onPlayerStateChanged.listen((PlayerState state) async {
-      await (playState.value = state);
-      await (isPlaying.value = (state == PlayerState.playing));
-
-      LoggerController.logger.d('controller in isPlaying : ${isPlaying.value}');
-      LoggerController.logger.d('controller in playState : ${playState.value}');
+      (playState.value = state);
+      (isPlaying.value = (state == PlayerState.playing));
     });
 
     _advancedPlayer.onPlayerComplete
