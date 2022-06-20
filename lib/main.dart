@@ -1,24 +1,24 @@
-import 'package:flutter/foundation.dart';
+import 'dart:io';
+import 'package:on_audio_query/on_audio_query.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:sizer/sizer.dart';
 import 'package:test_player/controller/AudioPlayerController.dart';
-import 'model/StreamModels.dart';
 import 'screens/audio_screen.dart';
 import 'widgets/player.dart';
 import 'package:get/get.dart';
 import 'package:device_preview/device_preview.dart';
 
-void main() => runApp(
-      DevicePreview(
-        enabled: !kReleaseMode,
-        builder: (context) => const MyApp(), // Wrap your app
-      ),
-    );
-
 // void main() => runApp(
-//       const MyApp(),
+//       DevicePreview(
+//         enabled: !kReleaseMode,
+//         builder: (context) => const MyApp(), // Wrap your app
+//       ),
 //     );
+
+void main() => runApp(
+      const MyApp(),
+    );
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget {
     return Sizer(builder: (context, orientation, deviceType) {
       return GetMaterialApp(
         title: 'DD Player',
-        theme: ThemeData.light(),
+        theme: ThemeData.dark(),
         darkTheme: ThemeData.dark(),
         locale: DevicePreview.locale(context),
         builder: DevicePreview.appBuilder,
@@ -49,7 +49,25 @@ class MyHomePage extends StatelessWidget {
         children: [
           Column(
             children: [
-              AppBar(title: Text('DD Player')),
+              AppBar(
+                title: Text('DD Player'),
+                actions: <Widget>[
+                  new IconButton(
+                    icon: new Icon(Icons.audio_file),
+                    tooltip: 'Wow',
+                    onPressed: () async {
+                      final result = await FilePicker.platform.pickFiles();
+
+                      if (result != null) {
+                        final file = File(result.files.single.path!);
+                        final OnAudioQuery audioQuery = OnAudioQuery();
+                        // audioQuery
+                        // audioPlayerController.streams.add();
+                      }
+                    },
+                  )
+                ],
+              ),
               Expanded(
                 child: AudioUi(),
               ),
