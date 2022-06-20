@@ -134,10 +134,10 @@ class DetailedPlayer extends StatelessWidget {
                               onChanged: (double value) {
                                 audioPlayerController.setPositionValue = value;
                               },
-                              // onChangeEnd: (double value) {
-                              //   audioPlayerController.setPositionValue = value;
-                              //   // await audioPlayerController.resume();
-                              // },
+                              onChangeEnd: (double value) async {
+                                audioPlayerController.setPositionValue = value;
+                                await audioPlayerController.resume();
+                              },
                             ),
                           ),
                         ),

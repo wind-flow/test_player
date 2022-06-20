@@ -29,7 +29,6 @@ class AudioPlayerController extends GetxController {
   void onInit() async {
     // TODO: implement onInit
     super.onInit();
-    _advancedPlayer.setPlayerMode(PlayerMode.lowLatency);
 
     final streamController = Get.put(StreamController());
     streams = streamController.streams;
