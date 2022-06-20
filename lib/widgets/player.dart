@@ -205,10 +205,10 @@ class DetailedPlayer extends StatelessWidget {
                     ),
                   ),
                   IconButton(
-                      icon: const Icon(Icons.fullscreen),
-                      onPressed: () {
-                        controller.animateToHeight(state: PanelState.MAX);
-                      }),
+                    icon: Icon(Icons.replay_10),
+                    onPressed: () =>
+                        audioPlayerController.movePosition(10, '+'),
+                  ),
                   Padding(
                     padding: const EdgeInsets.only(right: 3),
                     child: Opacity(
@@ -225,6 +225,11 @@ class DetailedPlayer extends StatelessWidget {
                             }),
                       ),
                     ),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.forward_10),
+                    onPressed: () =>
+                        audioPlayerController.movePosition(10, '+'),
                   ),
                 ],
               ),
