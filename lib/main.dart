@@ -9,16 +9,16 @@ import 'widgets/player.dart';
 import 'package:get/get.dart';
 import 'package:device_preview/device_preview.dart';
 
-// void main() => runApp(
-//       DevicePreview(
-//         enabled: !kReleaseMode,
-//         builder: (context) => const MyApp(), // Wrap your app
-//       ),
-//     );
-
 void main() => runApp(
-      const MyApp(),
+      DevicePreview(
+        enabled: !kReleaseMode,
+        builder: (context) => const MyApp(), // Wrap your app
+      ),
     );
+
+// void main() => runApp(
+//       const MyApp(),
+//     );
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -39,14 +39,7 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  MyHomePage({super.key});
-
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
+class MyHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final audioPlayerController = Get.put(AudioPlayerController());

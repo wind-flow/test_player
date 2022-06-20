@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:test_player/controller/AudioPlayerController.dart';
 import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
-// typedef OnTap(final Audio audio);
+import 'package:test_player/controller/LoggerController.dart';
 
 class AudioUi extends StatelessWidget {
   const AudioUi({super.key});
@@ -20,10 +20,15 @@ class AudioUi extends StatelessWidget {
             borderRadius: BorderRadius.all(
               Radius.circular(10.sp),
             ),
-            onTap: () {
-              if (audioPlayerController.currentStreamIndex.value != index)
-                audioPlayerController.currentStreamIndex.value = index;
-              audioPlayerController.smartPlay();
+            onTap: () async {
+              if (audioPlayerController.currentStreamIndex.value != index ||
+                  audioPlayerController.isPlaying == false) {
+                    audioPlayerController.currentStreamIndex.value = index;
+                    await audioPlayerController.setAudio(audioPlayerController.streams[index].music!);
+                audioPlayerController.play();
+              } else {
+                audioPlayerController.smartPlay();
+              }
               audioPlayerController.isShowingPlayer.value = true;
             },
             child: Obx(

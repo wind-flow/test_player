@@ -1,6 +1,8 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:miniplayer/miniplayer.dart';
 import 'package:test_player/controller/AudioPlayerController.dart';
+import 'package:test_player/controller/LoggerController.dart';
 import '../model/StreamModels.dart';
 import '../utils.dart';
 import 'package:get/get.dart';
@@ -30,7 +32,7 @@ class DetailedPlayer extends StatelessWidget {
       minHeight: playerMinHeight,
       maxHeight: playerMaxHeight,
       controller: controller,
-      elevation: 4,
+      elevation: 3,
       onDismissed: () {
         audioPlayerController.stop();
         audioPlayerController.isShowingPlayer(false);
@@ -46,8 +48,6 @@ class DetailedPlayer extends StatelessWidget {
           fit: BoxFit.contain,
         );
         final text = Text(audio.title!);
-        var progressIndicator = LinearProgressIndicator(
-            value: audioPlayerController.position.value.inSeconds.toDouble());
 
         //Declare additional widgets (eg. SkipButton) and variables
         if (!miniplayer) {
@@ -67,8 +67,7 @@ class DetailedPlayer extends StatelessWidget {
                 min: 0,
                 max: width - imageSize,
                 percentage: percentageExpandedPlayer,
-              ) /
-              2;
+              ) / 2;
 
           return Column(
             children: [
@@ -104,11 +103,12 @@ class DetailedPlayer extends StatelessWidget {
                                 onPressed: () =>
                                     audioPlayerController.movePosition(10, '+'),
                               ),
-                              IconButton(
-                                icon: Icon(Icons.pause_circle_filled),
-                                iconSize: 50,
-                                onPressed: () =>
-                                    audioPlayerController.smartPlay(),
+                              Obx(() => IconButton(
+                                  icon: Icon(audioPlayerController.isPlaying.value ? Icons.pause_circle_filled : Icons.play_circle_filled),
+                                  iconSize: 50,
+                                  onPressed: () =>
+                                      audioPlayerController.smartPlay(),
+                                ),
                               ),
                               IconButton(
                                 icon: Icon(Icons.forward_10),
@@ -120,23 +120,25 @@ class DetailedPlayer extends StatelessWidget {
                           ),
                         ),
                         Flexible(
-                          child: Slider(
-                            activeColor: Color(0xFF71B77A),
-                            inactiveColor: Color(0xFFEFEFEF),
-                            value: audioPlayerController
-                                .position.value.inSeconds
-                                .toDouble(),
-                            min: 0.0,
-                            max: audioPlayerController.duration.value.inSeconds
-                                    .toDouble() +
-                                1.0,
-                            onChanged: (double value) {
-                              audioPlayerController.setPositionValue = value;
-                            },
-                            // onChangeEnd: (double value) {
-                            //   audioPlayerController.setPositionValue = value;
-                            //   // await audioPlayerController.resume();
-                            // },
+                          child: Obx(() =>
+                            Slider(
+                              activeColor: Color(0xFF71B77A),
+                              inactiveColor: Color(0xFFEFEFEF),
+                              value: audioPlayerController
+                                  .position.value.inSeconds
+                                  .toDouble(),
+                              min: 0.0,
+                              max: audioPlayerController.duration.value.inSeconds
+                                      .toDouble() +
+                                  1.0,
+                              onChanged: (double value) {
+                                audioPlayerController.setPositionValue = value;
+                              },
+                              // onChangeEnd: (double value) {
+                              //   audioPlayerController.setPositionValue = value;
+                              //   // await audioPlayerController.resume();
+                              // },
+                            ),
                           ),
                         ),
                         Container(),
@@ -231,7 +233,9 @@ class DetailedPlayer extends StatelessWidget {
               height: progressIndicatorHeight,
               child: Opacity(
                 opacity: elementOpacity,
-                child: progressIndicator,
+                child: Obx(()=> 
+                  LinearProgressIndicator(value: audioPlayerController.position.value.inSeconds.toDouble())
+                ),
               ),
             ),
           ],
@@ -240,5 +244,3 @@ class DetailedPlayer extends StatelessWidget {
     );
   }
 }
-
-void onTap() {}

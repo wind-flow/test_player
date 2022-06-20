@@ -15,14 +15,13 @@ class AudioPlayerController extends GetxController {
   static double playerExpandProgress = 80.toDouble();
   static double playerMaxHeight =
       MediaQueryData.fromWindow(WidgetsBinding.instance.window).size.height;
-  //     (ui.window.physicalSize.height / ui.window.devicePixelRatio);
   static const double miniplayerPercentageDeclaration = 0.2;
 
   Rx<Duration> duration = const Duration(seconds: 0).obs;
   Rx<Duration> position = const Duration(seconds: 0).obs;
-  Rx<int> currentStreamIndex = 0.obs;
-  Rx<PlayerState> playState = PlayerState.stopped.obs;
-  RxBool isPlaying = false.obs;
+  final Rx<int> currentStreamIndex = 0.obs;
+  final Rx<PlayerState> playState = PlayerState.stopped.obs;
+  final RxBool isPlaying = false.obs;
   RxList<Stream> streams = <Stream>[].obs;
   RxBool isShowingPlayer = false.obs;
 
@@ -30,85 +29,84 @@ class AudioPlayerController extends GetxController {
   void onInit() async {
     // TODO: implement onInit
     super.onInit();
+    _advancedPlayer.setPlayerMode(PlayerMode.lowLatency);
 
     final streamController = Get.put(StreamController());
     streams = streamController.streams;
-    // final result = await FilePicker.platform.pickFiles();
 
     _advancedPlayer.onDurationChanged.listen((d) => duration.value = d);
     _advancedPlayer.onPositionChanged.listen((p) => position.value = p);
-    _advancedPlayer.onPlayerStateChanged.listen((PlayerState state) {
-      isPlaying.value = state == PlayerState.playing;
+    _advancedPlayer.onPlayerStateChanged.listen((PlayerState state) async {
+      await (playState.value = state);
+      await (isPlaying.value = (state == PlayerState.playing));
+
+      LoggerController.logger.d('controller in isPlaying : ${isPlaying.value}');
+      LoggerController.logger.d('controller in playState : ${playState.value}');
     });
 
     _advancedPlayer.onPlayerComplete
         .listen((event) => position.value = duration.value);
 
-    // if (result != null) {
-    //   final file = File(result.files.single.path!);
-    //   _advancedPlayer.setSourceDeviceFile(file.path);
-    // }
 
     await _advancedPlayer.setVolume(0.3);
     await _advancedPlayer.setPlaybackRate(1);
   }
 
   //play
-  void smartPlay() async {
+  Future<void> smartPlay() async {
     if (playState.value == PlayerState.playing) {
-      pause();
+      await pause();
     } else {
-      resume();
+      await resume();
     }
   }
 
-  void play() async {
-    stop();
-    resume();
+  Future<void> play() async {
+    await stop();
+    await resume();
   }
 
   //play
-  void resume() async {
+  Future<void> resume() async {
     await _advancedPlayer.resume();
-    playState.value = PlayerState.playing;
   }
 
   //pause
-  void pause() async {
+  Future<void> pause() async {
     await _advancedPlayer.pause();
-    playState.value = PlayerState.paused;
   }
 
   //stop
-  void stop() async {
+  Future<void> stop() async {
     await _advancedPlayer.stop();
     position.value = Duration(seconds: 0);
-    playState.value = PlayerState.stopped;
   }
 
-  void next() {
+  Future<void> next() async {
     if (currentStreamIndex.value + 1 != streams.length) {
       currentStreamIndex.value++;
     }
-    play();
+    await play();
   }
 
-  void back() {
+  Future<void> back() async {
     if (currentStreamIndex.value - 1 != -1) currentStreamIndex.value--;
-    play();
+    await play();
   }
 
-  void movePosition(double value, String operand) {
+  Future<void> movePosition(double value, String operand) async {
     if (operand == '-') {
-      _advancedPlayer
+      await _advancedPlayer
           .seek(Duration(seconds: (position.value.inSeconds - value.toInt())));
     } else {
-      _advancedPlayer
+      await _advancedPlayer
           .seek(Duration(seconds: (position.value.inSeconds + value.toInt())));
     }
   }
 
-  void setAudio() async {
+  Future<void> setAudio(String url) async {
+
+    // File URL
     // final result = await FilePicker.platform.pickFiles();
 
     // if (result != null) {
@@ -116,13 +114,10 @@ class AudioPlayerController extends GetxController {
     //   _advancedPlayer.setSourceDeviceFile(file.path);
     // }
 
-    var url =
-        'https://mp3l.jamendo.com/?trackid=1883450&format=mp31&from=c0s9nvpfEfRsUsG67crJOg%3D%3D%7CS7btAC1Vtvt5dLWkhxZNRQ%3D%3D';
 
-    _advancedPlayer.setSourceUrl(url);
+    // Remote URL
+    await _advancedPlayer.setSourceUrl(url);
   }
-
-  void onTab() {}
 
   set setPositionValue(double value) =>
       _advancedPlayer.seek(Duration(seconds: value.toInt()));
