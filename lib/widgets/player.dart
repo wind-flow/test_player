@@ -41,7 +41,7 @@ class DetailedPlayer extends StatelessWidget {
         final double width = MediaQuery.of(context).size.width;
         final maxImgSize = width;
 
-        final img = Image.network(
+        final img = Image.memory(
           audio.picture!,
           fit: BoxFit.contain,
         );

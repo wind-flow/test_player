@@ -1,7 +1,9 @@
+import 'package:flutter/foundation.dart';
+
 class Stream {
   final int? id;
   final String? music;
-  final String? picture;
+  final Uint8List? picture;
   final String? composer;
   final String? title;
   final String? long;
@@ -14,4 +16,6 @@ class Stream {
     this.title,
     this.long,
   });
+
+  get streams => null;
 }

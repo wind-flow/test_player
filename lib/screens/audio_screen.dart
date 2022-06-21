@@ -31,8 +31,7 @@ class AudioUi extends StatelessWidget {
               }
               audioPlayerController.isShowingPlayer.value = true;
             },
-            child: Obx(
-              () => Container(
+            child: Container(
                 height: 52.sp,
                 decoration: BoxDecoration(
                   color:
@@ -53,7 +52,7 @@ class AudioUi extends StatelessWidget {
                         child: ClipRRect(
                           borderRadius:
                               BorderRadius.all(Radius.circular(15.sp)),
-                          child: Image.network(
+                          child: Image.memory(
                             audioPlayerController.streams[index].picture!,
                             frameBuilder: (BuildContext context, Widget child,
                                 int? frame, bool wasSynchronouslyLoaded) {
@@ -126,7 +125,6 @@ class AudioUi extends StatelessWidget {
                   ],
                 ),
               ),
-            ),
           );
         }),
       ),
