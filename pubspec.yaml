@@ -45,8 +45,7 @@ dependencies:
   shared_preferences: ^2.0.15
   path_provider: ^2.0.11
   flutter_media_metadata: ^1.0.0+1
-  marquee: ^2.2.3
-  animated_overflow: ^2.0.0
+  marquee_text: ^2.5.0+1
 
 dev_dependencies:
   flutter_test:

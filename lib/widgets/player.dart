@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:marquee_text/marquee_text.dart';
 import 'package:miniplayer/miniplayer.dart';
+import 'package:test_player/constants/constants.dart';
 import 'package:test_player/controller/AudioPlayerController.dart';
 import 'package:test_player/controller/LoggerController.dart';
 import '../model/StreamModels.dart';
-import '../utils.dart';
+import '../constants/utils.dart';
 import 'package:get/get.dart';
-import 'package:animated_overflow/animated_overflow.dart';
 
 class DetailedPlayer extends StatelessWidget {
   final Stream audio;
@@ -27,6 +28,8 @@ class DetailedPlayer extends StatelessWidget {
     final ValueNotifier<double> playerExpandProgress =
         ValueNotifier(playerMinHeight);
 
+    bool isRepeated = false;
+
     return Miniplayer(
       valueNotifier: playerExpandProgress,
       minHeight: playerMinHeight,
@@ -43,7 +46,7 @@ class DetailedPlayer extends StatelessWidget {
         final double width = MediaQuery.of(context).size.width;
         final maxImgSize = width;
 
-        final img = Image.memory(
+        final albumImg = Image.memory(
           audio.picture!,
           fit: BoxFit.contain,
         );
@@ -80,7 +83,7 @@ class DetailedPlayer extends StatelessWidget {
                       bottom: paddingVertical),
                   child: SizedBox(
                     height: imageSize,
-                    child: img,
+                    child: albumImg,
                   ),
                 ),
               ),
@@ -92,12 +95,25 @@ class DetailedPlayer extends StatelessWidget {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        Flexible(child: Text(
-                          audio.title!,
-                          style: TextStyle(fontSize: 15),
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 2,),
+                        Flexible(
+                          child: Text(
+                            audio.title!,
+                            style: TextStyle(fontSize: 24),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 2,
+                            textAlign: TextAlign.center,
+                          ),
                         ),
+                        Text(audio.composer!,
+                            style:
+                                Theme.of(context).textTheme.bodyText2!.copyWith(
+                                      color: Theme.of(context)
+                                          .textTheme
+                                          .bodyText2!
+                                          .color!
+                                          .withOpacity(0.55),
+                                    ),
+                            overflow: TextOverflow.ellipsis),
                         Flexible(
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -106,7 +122,8 @@ class DetailedPlayer extends StatelessWidget {
                                 icon: Icon(Icons.replay_10),
                                 iconSize: 35,
                                 onPressed: () =>
-                                    audioPlayerController.movePosition(10, '-'),
+                                    audioPlayerController.movePosition(
+                                        Constants.movePostion.toDouble(), '-'),
                               ),
                               Obx(
                                 () => IconButton(
@@ -123,34 +140,53 @@ class DetailedPlayer extends StatelessWidget {
                                 icon: Icon(Icons.forward_10),
                                 iconSize: 35,
                                 onPressed: () =>
-                                    audioPlayerController.movePosition(10, '+'),
+                                    audioPlayerController.movePosition(
+                                        Constants.movePostion.toDouble(), '+'),
                               ),
                             ],
                           ),
                         ),
                         Flexible(
                           child: Obx(
-                            () => Slider(
-                              activeColor: Color(0xFF71B77A),
-                              inactiveColor: Color(0xFFEFEFEF),
-                              value: audioPlayerController
-                                  .position.value.inSeconds
-                                  .toDouble(),
-                              min: 0.0,
-                              max: audioPlayerController
-                                      .duration.value.inSeconds
-                                      .toDouble() +
-                                  1.0,
-                              onChanged: (double value) {
-                                audioPlayerController.setPositionValue = value;
-                              },
-                              onChangeEnd: (double value) async {
-                                audioPlayerController.setPositionValue = value;
-                                await audioPlayerController.resume();
-                              },
-                            ),
+                            () => isRepeated
+                                ? RangeSlider(
+                                    onChanged: (RangeValues value) {},
+                                    values: RangeValues(1, 2))
+                                : Slider(
+                                    activeColor: Color(0xFF71B77A),
+                                    inactiveColor: Color(0xFFEFEFEF),
+                                    value: audioPlayerController
+                                        .position.value.inSeconds
+                                        .toDouble(),
+                                    min: 0.0,
+                                    max: audioPlayerController
+                                            .duration.value.inSeconds
+                                            .toDouble() +
+                                        1.0,
+                                    label: audioPlayerController
+                                        .position.value.inSeconds
+                                        .toString(),
+                                    onChanged: (double value) {
+                                      audioPlayerController.setPositionValue =
+                                          value;
+                                    },
+                                    onChangeEnd: (double value) async {
+                                      audioPlayerController.setPositionValue =
+                                          value;
+                                      await audioPlayerController.resume();
+                                    },
+                                  ),
                           ),
                         ),
+                        // Row(
+                        //   mainAxisAlignment: MainAxisAlignment.end,
+                        //   children: [
+                        //     Obx(() => (Text(audioPlayerController.position.value
+                        //         .toString()))),
+                        //     Text(audioPlayerController.duration.value
+                        //         .toString()),
+                        //   ],
+                        // ),
                         Container(),
                         Container(),
                       ],
@@ -170,7 +206,7 @@ class DetailedPlayer extends StatelessWidget {
             value: height);
 
         late final elementOpacity;
-        
+
         if ((1 - 1 * percentageMiniplayer) > 1) {
           elementOpacity = 1;
         } else if ((1 - 1 * percentageMiniplayer) < 0) {
@@ -189,7 +225,7 @@ class DetailedPlayer extends StatelessWidget {
                 children: [
                   ConstrainedBox(
                     constraints: BoxConstraints(maxHeight: maxImgSize),
-                    child: img,
+                    child: albumImg,
                   ),
                   Expanded(
                     child: Padding(
@@ -201,39 +237,28 @@ class DetailedPlayer extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.center,
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            // Text(audio.title!,
-                            //     style: Theme.of(context)
-                            //         .textTheme
-                            //         .bodyText2!
-                            //         .copyWith(fontSize: 16),
-                            //     overflow: TextOverflow.ellipsis),
-                            // Text(
-                            //   audio.composer!,
-                            //   style: Theme.of(context)
-                            //       .textTheme
-                            //       .bodyText2!
-                            //       .copyWith(
-                            //         color: Theme.of(context)
-                            //             .textTheme
-                            //             .bodyText2!
-                            //             .color!
-                            //             .withOpacity(0.55),
-                            //       ),
-                            //   overflow: TextOverflow.ellipsis
-                            // ),
-                            AnimatedOverflow(
-              animatedOverflowDirection: AnimatedOverflowDirection.HORIZONTAL,
-              child: Text(
-                audio.title!,
-                style: const TextStyle(fontSize: 15),
-                maxLines: 1,
-                overflow: TextOverflow.visible,
-              ),
-              maxWidth: _width / 2.0,
-              maxHeight: AudioPlayerController.playerExpandProgress * 0.1,
-              padding: 40.0,
-              speed: 50.0,
-            ),
+                            MarqueeText(
+                              text: TextSpan(
+                                text: audio.title!,
+                              ),
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.white,
+                              ),
+                              speed: 15,
+                            ),
+                            Text(audio.composer!,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyText2!
+                                    .copyWith(
+                                      color: Theme.of(context)
+                                          .textTheme
+                                          .bodyText2!
+                                          .color!
+                                          .withOpacity(0.55),
+                                    ),
+                                overflow: TextOverflow.ellipsis),
                           ],
                         ),
                       ),
