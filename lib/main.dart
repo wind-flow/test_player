@@ -11,6 +11,7 @@ import 'screens/audio_screen.dart';
 import 'widgets/player.dart';
 import 'package:get/get.dart';
 import 'package:device_preview/device_preview.dart';
+import 'utils.dart';
 
 void main() => runApp(
       DevicePreview(
@@ -66,19 +67,15 @@ class MyHomePage extends StatelessWidget {
                         final _metadata =
                             await MetadataRetriever.fromFile(File(_file.path));
 
-                        // LoggerController.logger.d(_metadata.albumArtistName);
-                        // LoggerController.logger.d(_metadata.trackArtistNames);
-                        // LoggerController.logger.d(_metadata.trackName);
-                        // LoggerController.logger.d(_metadata.authorName);
                         Stream audio = Stream(
                           id: audioPlayerController.streams.length,
                           music: _file.path,
                           picture: _metadata.albumArt,
                           composer: _metadata.albumArtistName,
                           title: _metadata.trackName,
-                          long: _metadata.trackDuration.toString(),
-                        );
-
+                          long: _metadata.trackDuration!.msTomt().toString(),
+                        ); 
+                        
                         audioPlayerController.streams.add(audio);
                       }
                     },

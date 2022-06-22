@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:miniplayer/miniplayer.dart';
 import 'package:test_player/controller/AudioPlayerController.dart';
+import 'package:test_player/controller/LoggerController.dart';
 import '../model/StreamModels.dart';
 import '../utils.dart';
 import 'package:get/get.dart';
+import 'package:animated_overflow/animated_overflow.dart';
 
 class DetailedPlayer extends StatelessWidget {
   final Stream audio;
@@ -45,7 +47,6 @@ class DetailedPlayer extends StatelessWidget {
           audio.picture!,
           fit: BoxFit.contain,
         );
-        final text = Text(audio.title!);
 
         //Declare additional widgets (eg. SkipButton) and variables
         if (!miniplayer) {
@@ -91,7 +92,12 @@ class DetailedPlayer extends StatelessWidget {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        Flexible(child: text),
+                        Flexible(child: Text(
+                          audio.title!,
+                          style: TextStyle(fontSize: 15),
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 2,),
+                        ),
                         Flexible(
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -163,8 +169,18 @@ class DetailedPlayer extends StatelessWidget {
                 playerMinHeight,
             value: height);
 
-        final elementOpacity = 1 - 1 * percentageMiniplayer;
+        late final elementOpacity;
+        
+        if ((1 - 1 * percentageMiniplayer) > 1) {
+          elementOpacity = 1;
+        } else if ((1 - 1 * percentageMiniplayer) < 0) {
+          elementOpacity = 0;
+        } else {
+          elementOpacity = (1 - 1 * percentageMiniplayer);
+        }
+
         final progressIndicatorHeight = 4 - 4 * percentageMiniplayer;
+        double _width = MediaQuery.of(context).size.width;
 
         return Column(
           children: [
@@ -185,24 +201,39 @@ class DetailedPlayer extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.center,
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Text(audio.title!,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyText2!
-                                    .copyWith(fontSize: 16)),
-                            Text(
-                              audio.composer!,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyText2!
-                                  .copyWith(
-                                    color: Theme.of(context)
-                                        .textTheme
-                                        .bodyText2!
-                                        .color!
-                                        .withOpacity(0.55),
-                                  ),
-                            ),
+                            // Text(audio.title!,
+                            //     style: Theme.of(context)
+                            //         .textTheme
+                            //         .bodyText2!
+                            //         .copyWith(fontSize: 16),
+                            //     overflow: TextOverflow.ellipsis),
+                            // Text(
+                            //   audio.composer!,
+                            //   style: Theme.of(context)
+                            //       .textTheme
+                            //       .bodyText2!
+                            //       .copyWith(
+                            //         color: Theme.of(context)
+                            //             .textTheme
+                            //             .bodyText2!
+                            //             .color!
+                            //             .withOpacity(0.55),
+                            //       ),
+                            //   overflow: TextOverflow.ellipsis
+                            // ),
+                            AnimatedOverflow(
+              animatedOverflowDirection: AnimatedOverflowDirection.HORIZONTAL,
+              child: Text(
+                audio.title!,
+                style: const TextStyle(fontSize: 15),
+                maxLines: 1,
+                overflow: TextOverflow.visible,
+              ),
+              maxWidth: _width / 2.0,
+              maxHeight: AudioPlayerController.playerExpandProgress * 0.1,
+              padding: 40.0,
+              speed: 50.0,
+            ),
                           ],
                         ),
                       ),
@@ -242,11 +273,15 @@ class DetailedPlayer extends StatelessWidget {
               height: progressIndicatorHeight,
               child: Opacity(
                 opacity: elementOpacity,
-                child: Obx(() => LinearProgressIndicator(
-                    value: audioPlayerController.position.value.inSeconds
-                            .toDouble() /
-                        audioPlayerController.duration.value.inSeconds
-                            .toDouble())),
+                child: Obx(() {
+                  return LinearProgressIndicator(
+                      value: (audioPlayerController.position.value.inSeconds
+                                  .toDouble() +
+                              1) /
+                          (audioPlayerController.duration.value.inSeconds
+                                  .toDouble() +
+                              1));
+                }),
               ),
             ),
           ],
