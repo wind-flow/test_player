@@ -43,7 +43,6 @@ class AudioPlayerController extends GetxController {
     _advancedPlayer.onPlayerComplete
         .listen((event) => position.value = duration.value);
 
-
     await _advancedPlayer.setVolume(0.3);
     await _advancedPlayer.setPlaybackRate(1);
   }
@@ -94,14 +93,15 @@ class AudioPlayerController extends GetxController {
     if (operand == '-') {
       await _advancedPlayer
           .seek(Duration(seconds: (position.value.inSeconds - value.toInt())));
+      position.value = (position.value - Duration(seconds: value.toInt()));
     } else {
       await _advancedPlayer
           .seek(Duration(seconds: (position.value.inSeconds + value.toInt())));
+      position.value = (position.value + Duration(seconds: value.toInt()));
     }
   }
 
   Future<void> setAudio(String url) async {
-
     // File URL
     // final result = await FilePicker.platform.pickFiles();
 
@@ -109,7 +109,6 @@ class AudioPlayerController extends GetxController {
     //   final file = File(result.files.single.path!);
     //   _advancedPlayer.setSourceDeviceFile(file.path);
     // }
-
 
     // Remote URL
     await _advancedPlayer.setSourceUrl(url);

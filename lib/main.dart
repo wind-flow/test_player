@@ -11,7 +11,7 @@ import 'screens/audio_screen.dart';
 import 'widgets/player.dart';
 import 'package:get/get.dart';
 import 'package:device_preview/device_preview.dart';
-import 'utils.dart';
+import 'constants/utils.dart';
 
 void main() => runApp(
       DevicePreview(
@@ -58,7 +58,7 @@ class MyHomePage extends StatelessWidget {
                 actions: <Widget>[
                   new IconButton(
                     icon: new Icon(Icons.audio_file),
-                    tooltip: 'audioFile',
+                    tooltip: 'select audio',
                     onPressed: () async {
                       final result = await FilePicker.platform.pickFiles();
 
