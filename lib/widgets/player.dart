@@ -309,6 +309,11 @@ class DetailedPlayer extends StatelessWidget {
                     onPressed: () =>
                         audioPlayerController.movePosition(10, '+'),
                   ),
+                  IconButton(
+                    icon: Icon(Icons.speed),
+                    onPressed: () =>
+                        audioPlayerController.movePosition(10, '+'),
+                  ),
                 ],
               ),
             ),
