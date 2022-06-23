@@ -1,3 +1,4 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:marquee_text/marquee_text.dart';
 import 'package:miniplayer/miniplayer.dart';
@@ -96,24 +97,28 @@ class DetailedPlayer extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         Flexible(
-                          child: Text(
-                            audio.title!,
-                            style: TextStyle(fontSize: 24),
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 2,
-                            textAlign: TextAlign.center,
-                          ),
+                          child: MarqueeText(
+                              text: TextSpan(
+                                text: audio.title!,
+                              ),
+                              style: TextStyle(
+                                fontSize: 24,
+                                color: Colors.white,
+                              ),
+                              speed: 25,
+                            ),
+                      ),
+                        Flexible(
+                          child: Text(audio.composer!,
+                              style:Theme.of(context).textTheme.bodyText2!.copyWith(
+                                    color: Theme.of(context)
+                                        .textTheme
+                                        .bodyText2!
+                                        .color!
+                                        .withOpacity(0.55),
+                                      ),
+                              overflow: TextOverflow.ellipsis),
                         ),
-                        Text(audio.composer!,
-                            style:
-                                Theme.of(context).textTheme.bodyText2!.copyWith(
-                                      color: Theme.of(context)
-                                          .textTheme
-                                          .bodyText2!
-                                          .color!
-                                          .withOpacity(0.55),
-                                    ),
-                            overflow: TextOverflow.ellipsis),
                         Flexible(
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -128,7 +133,7 @@ class DetailedPlayer extends StatelessWidget {
                               Obx(
                                 () => IconButton(
                                   icon: Icon(
-                                      audioPlayerController.isPlaying.value
+                                      audioPlayerController.isPlaying.value && audioPlayerController.playState != PlayerState.completed
                                           ? Icons.pause_circle_filled
                                           : Icons.play_circle_filled),
                                   iconSize: 50,
@@ -147,46 +152,43 @@ class DetailedPlayer extends StatelessWidget {
                           ),
                         ),
                         Flexible(
-                          child: Obx(
-                            () => isRepeated
-                                ? RangeSlider(
-                                    onChanged: (RangeValues value) {},
-                                    values: RangeValues(1, 2))
-                                : Slider(
-                                    activeColor: Color(0xFF71B77A),
-                                    inactiveColor: Color(0xFFEFEFEF),
-                                    value: audioPlayerController
-                                        .position.value.inSeconds
-                                        .toDouble(),
-                                    min: 0.0,
-                                    max: audioPlayerController
-                                            .duration.value.inSeconds
-                                            .toDouble() +
-                                        1.0,
-                                    label: audioPlayerController
-                                        .position.value.inSeconds
-                                        .toString(),
-                                    onChanged: (double value) {
-                                      audioPlayerController.setPositionValue =
-                                          value;
-                                    },
-                                    onChangeEnd: (double value) async {
-                                      audioPlayerController.setPositionValue =
-                                          value;
-                                      await audioPlayerController.resume();
-                                    },
-                                  ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Obx(()=> Text(audioPlayerController.position.value.inSeconds.msTomt())),
+                              Obx(() => isRepeated
+                                  ? RangeSlider(
+                                      onChanged: (RangeValues value) {},
+                                      values: RangeValues(1, 2))
+                                  : Slider(
+                                      activeColor: Color(0xFF71B77A),
+                                      inactiveColor: Color(0xFFEFEFEF),
+                                      value: audioPlayerController
+                                          .position.value.inSeconds
+                                          .toDouble(),
+                                      min: 0.0,
+                                      max: audioPlayerController
+                                              .duration.value.inSeconds
+                                              .toDouble() +
+                                          1.0,
+                                      label: audioPlayerController
+                                          .position.value.inSeconds
+                                          .toString(),
+                                      onChanged: (double value) {
+                                        audioPlayerController.setPositionValue =
+                                            value;
+                                      },
+                                      onChangeEnd: (double value) async {
+                                        audioPlayerController.setPositionValue =
+                                            value;
+                                        await audioPlayerController.resume();
+                                      },
+                                    ),
+                            ),
+                            Text(audioPlayerController.streams[audioPlayerController.currentStreamIndex.toInt()].long!),
+                            ]
                           ),
                         ),
-                        // Row(
-                        //   mainAxisAlignment: MainAxisAlignment.end,
-                        //   children: [
-                        //     Obx(() => (Text(audioPlayerController.position.value
-                        //         .toString()))),
-                        //     Text(audioPlayerController.duration.value
-                        //         .toString()),
-                        //   ],
-                        // ),
                         Container(),
                         Container(),
                       ],
@@ -267,7 +269,7 @@ class DetailedPlayer extends StatelessWidget {
                   IconButton(
                     icon: Icon(Icons.replay_10),
                     onPressed: () =>
-                        audioPlayerController.movePosition(10, '+'),
+                        audioPlayerController.movePosition(10, '-'),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(right: 3),
@@ -276,7 +278,7 @@ class DetailedPlayer extends StatelessWidget {
                       child: Obx(
                         () => IconButton(
                             icon: Icon(
-                              audioPlayerController.isPlaying.value
+                              audioPlayerController.isPlaying.value && audioPlayerController.playState != PlayerState.completed
                                   ? Icons.pause
                                   : Icons.play_arrow,
                             ),

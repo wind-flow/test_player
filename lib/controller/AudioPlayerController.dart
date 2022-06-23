@@ -33,17 +33,24 @@ class AudioPlayerController extends GetxController {
     final streamController = Get.put(StreamController());
     streams = streamController.streams;
 
-    _advancedPlayer.onDurationChanged.listen((d) => duration.value = d);
-    _advancedPlayer.onPositionChanged.listen((p) => position.value = p);
+    _advancedPlayer.onDurationChanged.listen((d) {
+      duration.value = d;
+    });
+    _advancedPlayer.onPositionChanged.listen((p) {
+      position.value = p;
+    });
+    
     _advancedPlayer.onPlayerStateChanged.listen((PlayerState state) async {
       (playState.value = state);
       (isPlaying.value = (state == PlayerState.playing));
     });
 
-    _advancedPlayer.onPlayerComplete
-        .listen((event) => position.value = duration.value);
+    _advancedPlayer.onPlayerComplete.listen((event) {
+      position.value = duration.value;
+      playState.value = PlayerState.completed;
+    });
 
-    await _advancedPlayer.setVolume(0.3);
+    await _advancedPlayer.setVolume(0.7);
     await _advancedPlayer.setPlaybackRate(1);
   }
 
