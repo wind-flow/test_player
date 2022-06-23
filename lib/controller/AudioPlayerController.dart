@@ -19,7 +19,8 @@ class AudioPlayerController extends GetxController {
 
   Rx<Duration> duration = const Duration(seconds: 0).obs;
   Rx<Duration> position = const Duration(seconds: 0).obs;
-  final Rx<int> currentStreamIndex = 0.obs;
+  late RxString curPosition = '0'.obs;
+  final RxInt currentStreamIndex = 0.obs;
   final Rx<PlayerState> playState = PlayerState.stopped.obs;
   final RxBool isPlaying = false.obs;
   RxList<Stream> streams = <Stream>[].obs;
@@ -39,7 +40,7 @@ class AudioPlayerController extends GetxController {
     _advancedPlayer.onPositionChanged.listen((p) {
       position.value = p;
     });
-    
+
     _advancedPlayer.onPlayerStateChanged.listen((PlayerState state) async {
       (playState.value = state);
       (isPlaying.value = (state == PlayerState.playing));
@@ -52,6 +53,21 @@ class AudioPlayerController extends GetxController {
 
     await _advancedPlayer.setVolume(0.7);
     await _advancedPlayer.setPlaybackRate(1);
+
+    interval(position, (time) {
+      var seconds = ((time.inSeconds / 1000) % 60).floor().toString(),
+          minutes = ((time.inSeconds / (1000 * 60)) % 60).floor().toString(),
+          hours = ((time.inSeconds / (1000 * 60 * 60)) % 24).floor().toString();
+
+      hours = (int.parse(hours) < 10) ? "0" + hours : hours;
+      minutes = (int.parse(minutes) < 10) ? "0" + minutes : minutes;
+      seconds = (int.parse(seconds) < 10) ? "0" + seconds : seconds;
+
+      var result = hours == '00'
+          ? minutes + ":" + seconds
+          : hours + ":" + minutes + ":" + seconds;
+      curPosition.value = result;
+    }, time: Duration(seconds: 1));
   }
 
   //play
@@ -123,4 +139,20 @@ class AudioPlayerController extends GetxController {
 
   set setPositionValue(double value) =>
       _advancedPlayer.seek(Duration(seconds: value.toInt()));
+
+  String DurationToSecondInString(Duration time) {
+    var seconds = ((time.inSeconds / 1000) % 60).floor().toString(),
+        minutes = ((time.inSeconds / (1000 * 60)) % 60).floor().toString(),
+        hours = ((time.inSeconds / (1000 * 60 * 60)) % 24).floor().toString();
+
+    hours = (int.parse(hours) < 10) ? "0" + hours : hours;
+    minutes = (int.parse(minutes) < 10) ? "0" + minutes : minutes;
+    seconds = (int.parse(seconds) < 10) ? "0" + seconds : seconds;
+
+    var result = hours == '00'
+        ? minutes + ":" + seconds
+        : hours + ":" + minutes + ":" + seconds;
+
+    return result;
+  }
 }

@@ -68,13 +68,13 @@ class MyHomePage extends StatelessWidget {
                             await MetadataRetriever.fromFile(File(_file.path));
 
                         Stream audio = Stream(
-                          id: audioPlayerController.streams.length,
-                          music: _file.path,
-                          picture: _metadata.albumArt,
-                          composer: _metadata.albumArtistName,
-                          title: _metadata.trackName,
-                          long: _metadata.trackDuration!.msTomt().toString(),
-                        );
+                            id: audioPlayerController.streams.length,
+                            music: _file.path,
+                            picture: _metadata.albumArt,
+                            composer: _metadata.albumArtistName,
+                            title: _metadata.trackName,
+                            long: DurationToSecondInString(
+                                Duration(seconds: _metadata.trackDuration!)));
 
                         audioPlayerController.streams.add(audio);
                       }
