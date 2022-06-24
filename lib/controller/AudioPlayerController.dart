@@ -137,6 +137,11 @@ class AudioPlayerController extends GetxController {
     await _advancedPlayer.setSourceUrl(url);
   }
 
+  void setAudioSpeed(double speed) async {
+    await _advancedPlayer.setPlaybackRate(speed);
+  }
+
+
   set setPositionValue(double value) =>
       _advancedPlayer.seek(Duration(seconds: value.toInt()));
 

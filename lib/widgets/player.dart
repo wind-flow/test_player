@@ -127,7 +127,12 @@ class DetailedPlayer extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               IconButton(
-                                icon: Icon(Icons.replay_10),
+                                icon: Icon(Icons.swipe),
+                                iconSize: 35,
+                                onPressed: () {},
+                              ),
+                              IconButton(
+                                icon: Icon(Icons.replay_5),
                                 iconSize: 35,
                                 onPressed: () =>
                                     audioPlayerController.movePosition(
@@ -147,12 +152,18 @@ class DetailedPlayer extends StatelessWidget {
                                 ),
                               ),
                               IconButton(
-                                icon: Icon(Icons.forward_10),
+                                icon: Icon(Icons.forward_5),
                                 iconSize: 35,
                                 onPressed: () =>
                                     audioPlayerController.movePosition(
                                         Constants.movePostion.toDouble(), '+'),
                               ),
+                              IconButton(
+                                  icon: Icon(Icons.speed),
+                                  iconSize: 35,
+                                  onPressed: () {
+                                    audioPlayerController.setAudioSpeed(1.5);
+                                  }),
                             ],
                           ),
                         ),
@@ -281,9 +292,9 @@ class DetailedPlayer extends StatelessWidget {
                     ),
                   ),
                   IconButton(
-                    icon: Icon(Icons.replay_10),
-                    onPressed: () =>
-                        audioPlayerController.movePosition(10, '-'),
+                    icon: Icon(Icons.replay_5),
+                    onPressed: () => audioPlayerController.movePosition(
+                        Constants.movePostion, '-'),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(right: 3),
@@ -305,14 +316,9 @@ class DetailedPlayer extends StatelessWidget {
                     ),
                   ),
                   IconButton(
-                    icon: Icon(Icons.forward_10),
-                    onPressed: () =>
-                        audioPlayerController.movePosition(10, '+'),
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.speed),
-                    onPressed: () =>
-                        audioPlayerController.movePosition(10, '+'),
+                    icon: Icon(Icons.forward_5),
+                    onPressed: () => audioPlayerController.movePosition(
+                        Constants.movePostion, '+'),
                   ),
                 ],
               ),

@@ -1,3 +1,3 @@
 class Constants {
-  static int movePostion = 5;
+  static double movePostion = 5;
 }
