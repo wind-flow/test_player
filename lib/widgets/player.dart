@@ -3,14 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:marquee_text/marquee_text.dart';
 import 'package:miniplayer/miniplayer.dart';
 import 'package:test_player/constants/constants.dart';
-import 'package:test_player/controller/AudioPlayerController.dart';
-import 'package:test_player/controller/LoggerController.dart';
-import '../model/StreamModels.dart';
+import 'package:test_player/controller/audioPlayerController.dart';
+import 'package:test_player/controller/loggerController.dart';
 import '../constants/utils.dart';
 import 'package:get/get.dart';
+import '../model/stream.dart';
 
 class DetailedPlayer extends StatelessWidget {
-  final Stream audio;
+  final Audio audio;
 
   DetailedPlayer({
     Key? key,

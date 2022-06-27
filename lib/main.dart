@@ -3,22 +3,26 @@ import 'package:flutter/foundation.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_media_metadata/flutter_media_metadata.dart';
+import 'package:hive_flutter/adapters.dart';
 import 'package:sizer/sizer.dart';
-import 'package:test_player/controller/AudioPlayerController.dart';
-import 'package:test_player/controller/LoggerController.dart';
-import 'package:test_player/model/StreamModels.dart';
+import 'package:test_player/controller/audioPlayerController.dart';
+import 'package:test_player/controller/loggerController.dart';
+import 'package:test_player/model/audio.dart';
 import 'screens/audio_screen.dart';
 import 'widgets/player.dart';
 import 'package:get/get.dart';
 import 'package:device_preview/device_preview.dart';
 import 'constants/utils.dart';
 
-void main() => runApp(
-      DevicePreview(
-        enabled: !kReleaseMode,
-        builder: (context) => const MyApp(), // Wrap your app
-      ),
-    );
+void main() async {
+  await Hive.initFlutter();
+  runApp(
+    DevicePreview(
+      enabled: !kReleaseMode,
+      builder: (context) => const MyApp(), // Wrap your app
+    ),
+  );
+}
 
 // void main() => runApp(
 //       const MyApp(),
@@ -67,7 +71,7 @@ class MyHomePage extends StatelessWidget {
                         final _metadata =
                             await MetadataRetriever.fromFile(File(_file.path));
 
-                        Stream audio = Stream(
+                        Audio audio = Audio(
                             id: audioPlayerController.streams.length,
                             music: _file.path,
                             picture: _metadata.albumArt,
@@ -112,7 +116,7 @@ class MyHomePage extends StatelessWidget {
         selectedItemColor: Colors.blue,
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(icon: Icon(Icons.audiotrack), label: 'Audio'),
-          BottomNavigationBarItem(icon: Icon(Icons.videocam), label: 'Video'),
+          // BottomNavigationBarItem(icon: Icon(Icons.videocam), label: 'Video'),
         ],
       ),
       // bottomNavigationBar: ValueListenableBuilder(

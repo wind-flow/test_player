@@ -5,9 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'dart:ui' as ui;
 import 'package:audioplayers/audioplayers.dart';
-import 'package:test_player/controller/LoggerController.dart';
-import 'package:test_player/controller/StreamController.dart';
-import 'package:test_player/model/StreamModels.dart';
+import 'package:test_player/controller/loggerController.dart';
+import 'package:test_player/controller/audioController.dart';
+import 'package:test_player/model/audio.dart';
 
 class AudioPlayerController extends GetxController {
   final AudioPlayer _advancedPlayer = AudioPlayer();
@@ -23,7 +23,7 @@ class AudioPlayerController extends GetxController {
   final RxInt currentStreamIndex = 0.obs;
   final Rx<PlayerState> playState = PlayerState.stopped.obs;
   final RxBool isPlaying = false.obs;
-  RxList<Stream> streams = <Stream>[].obs;
+  RxList<Audio> streams = <Audio>[].obs;
   RxBool isShowingPlayer = false.obs;
 
   @override
@@ -31,7 +31,7 @@ class AudioPlayerController extends GetxController {
     // TODO: implement onInit
     super.onInit();
 
-    final streamController = Get.put(StreamController());
+    final streamController = Get.put(AudioController());
     streams = streamController.streams;
 
     _advancedPlayer.onDurationChanged.listen((d) {
@@ -141,7 +141,6 @@ class AudioPlayerController extends GetxController {
     await _advancedPlayer.setPlaybackRate(speed);
   }
 
-
   set setPositionValue(double value) =>
       _advancedPlayer.seek(Duration(seconds: value.toInt()));
 
@@ -159,5 +158,9 @@ class AudioPlayerController extends GetxController {
         : hours + ":" + minutes + ":" + seconds;
 
     return result;
+  }
+
+  void removePlayList(int index) {
+    streams.removeAt(index);
   }
 }
