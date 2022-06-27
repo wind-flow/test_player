@@ -7,7 +7,7 @@ import 'package:test_player/controller/audioPlayerController.dart';
 import 'package:test_player/controller/loggerController.dart';
 import '../constants/utils.dart';
 import 'package:get/get.dart';
-import '../model/stream.dart';
+import '../model/audio.dart';
 
 class DetailedPlayer extends StatelessWidget {
   final Audio audio;

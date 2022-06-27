@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:hive/hive.dart';
-import 'audio.g.dart';
+part 'audio.g.dart';
 
 @HiveType(typeId: 0)
 class Audio extends HiveObject {

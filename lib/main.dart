@@ -116,7 +116,7 @@ class MyHomePage extends StatelessWidget {
         selectedItemColor: Colors.blue,
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(icon: Icon(Icons.audiotrack), label: 'Audio'),
-          // BottomNavigationBarItem(icon: Icon(Icons.videocam), label: 'Video'),
+          BottomNavigationBarItem(icon: Icon(Icons.videocam), label: 'Video'),
         ],
       ),
       // bottomNavigationBar: ValueListenableBuilder(
