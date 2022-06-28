@@ -5,17 +5,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter_media_metadata/flutter_media_metadata.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:sizer/sizer.dart';
+import 'package:test_player/controller/audioController.dart';
 import 'package:test_player/controller/audioPlayerController.dart';
 import 'package:test_player/controller/loggerController.dart';
+import 'package:test_player/repository/audio_hive_repository.dart';
 import 'package:test_player/model/audio.dart';
-import 'screens/audio_screen.dart';
+import 'screens/audio_ui.dart';
 import 'widgets/player.dart';
 import 'package:get/get.dart';
 import 'package:device_preview/device_preview.dart';
 import 'constants/utils.dart';
+import 'dart:io' show Platform;
 
 void main() async {
   await Hive.initFlutter();
+  Hive.registerAdapter(AudioAdapter());
+  await AudioHiveRepository().openBox();
+
   runApp(
     DevicePreview(
       enabled: !kReleaseMode,
@@ -80,7 +86,9 @@ class MyHomePage extends StatelessWidget {
                             long: DurationToSecondInString(
                                 Duration(seconds: _metadata.trackDuration!)));
 
-                        audioPlayerController.streams.add(audio);
+                        // audioPlayerController.streams.add(audio);
+                        // AudioController().add(audio);
+                        audioPlayerController.addPlayList(audio);
                       }
                     },
                   )
@@ -111,14 +119,14 @@ class MyHomePage extends StatelessWidget {
           // })
         ],
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 0,
-        selectedItemColor: Colors.blue,
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(icon: Icon(Icons.audiotrack), label: 'Audio'),
-          BottomNavigationBarItem(icon: Icon(Icons.videocam), label: 'Video'),
-        ],
-      ),
+      // bottomNavigationBar: BottomNavigationBar(
+      //   currentIndex: 0,
+      //   selectedItemColor: Colors.blue,
+      //   items: const <BottomNavigationBarItem>[
+      //     BottomNavigationBarItem(icon: Icon(Icons.audiotrack), label: 'Audio'),
+      //     BottomNavigationBarItem(icon: Icon(Icons.videocam), label: 'Video'),
+      //   ],
+      // ),
       // bottomNavigationBar: ValueListenableBuilder(
       //   valueListenable: playerExpandProgress,
       //   builder: (BuildContext context, double height, Widget? child) {

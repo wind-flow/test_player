@@ -1,16 +1,18 @@
+import 'package:get/get.dart';
 import 'package:hive/hive.dart';
+import 'package:test_player/controller/loggerController.dart';
 
 import '../model/audio.dart';
 
 const String STREAM_BOX = 'STREAM_BOX';
 
-class AudioHiveHelper {
-  static final AudioHiveHelper _singleton = AudioHiveHelper._internal();
-  factory AudioHiveHelper() {
+class AudioHiveRepository {
+  static final AudioHiveRepository _singleton = AudioHiveRepository._internal();
+  factory AudioHiveRepository() {
     return _singleton;
   }
 
-  AudioHiveHelper._internal();
+  AudioHiveRepository._internal();
 
   Box<Audio>? audioBox;
 
@@ -18,12 +20,12 @@ class AudioHiveHelper {
     audioBox = await Hive.openBox(STREAM_BOX);
   }
 
-  Future audioCreate(Audio newAudio) async {
+  Future<int> audioCreate(Audio newAudio) async {
     return await audioBox!.add(newAudio);
   }
 
-  Future<List<Audio>> audioRead() async {
-    return await audioBox!.values.toList();
+  Future<RxList<Audio>> audioRead() async {
+    return await audioBox!.values.toList().obs;
   }
 
   Future audioUpdate(int index, Audio updatedAudio) async {
@@ -31,7 +33,6 @@ class AudioHiveHelper {
   }
 
   Future audioDelete(int index) async {
-    return audioBox!.delete(index);
+    return audioBox!.deleteAt(index);
   }
-
 }

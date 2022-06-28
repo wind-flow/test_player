@@ -23,8 +23,11 @@ class AudioPlayerController extends GetxController {
   final RxInt currentStreamIndex = 0.obs;
   final Rx<PlayerState> playState = PlayerState.stopped.obs;
   final RxBool isPlaying = false.obs;
-  RxList<Audio> streams = <Audio>[].obs;
+
   RxBool isShowingPlayer = false.obs;
+
+  final AudioController _audioController = AudioController();
+  RxList<Audio> streams = <Audio>[].obs;
 
   @override
   void onInit() async {
@@ -32,7 +35,8 @@ class AudioPlayerController extends GetxController {
     super.onInit();
 
     final streamController = Get.put(AudioController());
-    streams = streamController.streams;
+
+    streams = await _audioController.read();
 
     _advancedPlayer.onDurationChanged.listen((d) {
       duration.value = d;
@@ -125,15 +129,6 @@ class AudioPlayerController extends GetxController {
   }
 
   Future<void> setAudio(String url) async {
-    // File URL
-    // final result = await FilePicker.platform.pickFiles();
-
-    // if (result != null) {
-    //   final file = File(result.files.single.path!);
-    //   _advancedPlayer.setSourceDeviceFile(file.path);
-    // }
-
-    // Remote URL
     await _advancedPlayer.setSourceUrl(url);
   }
 
@@ -160,7 +155,15 @@ class AudioPlayerController extends GetxController {
     return result;
   }
 
-  void removePlayList(int index) {
-    streams.removeAt(index);
+  void addPlayList(Audio audio) async {
+    int result = await _audioController.add(audio);
+    // .then((value) {
+    //   streams.add(audio);
+    // });
+  }
+
+  void deletePlayList(int index) async {
+    _audioController.delete(index);
+    streams = await _audioController.read();
   }
 }
