@@ -155,15 +155,19 @@ class AudioPlayerController extends GetxController {
     return result;
   }
 
+  Future<void> refreshPlayList() async {
+    streams = await _audioController.read();
+  }
+
   void addPlayList(Audio audio) async {
     int result = await _audioController.add(audio);
-    // .then((value) {
-    //   streams.add(audio);
-    // });
+    streams = await _audioController.read();
+    update();
   }
 
   void deletePlayList(int index) async {
     _audioController.delete(index);
     streams = await _audioController.read();
+    update();
   }
 }
