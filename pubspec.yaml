@@ -50,6 +50,7 @@ dependencies:
   hive_flutter: ^1.1.0
   build_runner: ^2.1.11
   analyzer: ^4.1.0
+  marquee: ^2.2.3
 
 dev_dependencies:
   flutter_test:
