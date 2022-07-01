@@ -30,6 +30,7 @@ class DetailedPlayer extends StatelessWidget {
         ValueNotifier(playerMinHeight);
 
     bool isRepeated = false;
+    RxBool isShowSpeedSetting = true.obs;
 
     return Miniplayer(
       valueNotifier: playerExpandProgress,
@@ -159,12 +160,41 @@ class DetailedPlayer extends StatelessWidget {
                                         Constants.movePostion.toDouble(), '+'),
                               ),
                               IconButton(
-                                  icon: Icon(Icons.speed),
+                                  icon: Icon(Icons.fast_forward),
                                   iconSize: 35,
                                   onPressed: () {
-                                    audioPlayerController.setAudioSpeed(1.5);
+                                    isShowSpeedSetting.value =
+                                        !isShowSpeedSetting.value;
                                   }),
                             ],
+                          ),
+                        ),
+                        Obx(
+                          () => 
+                          Flexible(
+                            child: SizedBox(
+                              height: 10,
+                              child: Offstage(
+                                offstage: isShowSpeedSetting.value,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    IconButton(
+                                        icon: Icon(Icons.arrow_back_ios),
+                                        iconSize: 35,
+                                        onPressed: () {
+                                          audioPlayerController.speed.value -= 0.05;
+                                        }),
+                                    IconButton(
+                                        icon: Icon(Icons.arrow_forward_ios),
+                                        iconSize: 35,
+                                        onPressed: () {
+                                          audioPlayerController.speed.value += 0.05;
+                                        }),
+                                  ],
+                                ),
+                              ),
+                            ),
                           ),
                         ),
                         Flexible(
@@ -172,9 +202,13 @@ class DetailedPlayer extends StatelessWidget {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Obx(() {
+                                  // LoggerController.logger.d(
+                                  //     audioPlayerController
+                                  //         .DurationToSecondInString(
+                                  //             audioPlayerController.position));
                                   return Flexible(
                                     child: Text(
-                                        '${DurationToSecondInString(audioPlayerController.position.value)}'),
+                                        '${audioPlayerController.curPosition.value}'),
                                   );
                                 }),
                                 Obx(
