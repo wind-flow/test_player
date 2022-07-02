@@ -57,10 +57,14 @@ class AudioPlayerController extends GetxController {
       playState.value = PlayerState.completed;
     });
 
-    await _advancedPlayer.setVolume(0.7);
+    await _advancedPlayer.setVolume(1.5);
     await _advancedPlayer.setPlaybackRate(speed.value);
 
-    ever(speed, (_) async => await _advancedPlayer.setPlaybackRate(speed.value));
+    ever(speed, (_) async {
+      await _advancedPlayer.setPlaybackRate(speed.value);
+      await resume();
+      await (playState.value = PlayerState.playing);
+    });
   }
 
   //play

@@ -29,8 +29,12 @@ class DetailedPlayer extends StatelessWidget {
     final ValueNotifier<double> playerExpandProgress =
         ValueNotifier(playerMinHeight);
 
-    bool isRepeated = false;
+    RxBool isRepeated = false.obs;
     RxBool isShowSpeedSetting = true.obs;
+
+    Rx<RangeValues> rangeValues = RangeValues(0.0,
+            audioPlayerController.duration.value.inSeconds.toDouble() + 1.0)
+        .obs;
 
     return Miniplayer(
       valueNotifier: playerExpandProgress,
@@ -130,7 +134,9 @@ class DetailedPlayer extends StatelessWidget {
                               IconButton(
                                 icon: Icon(Icons.swipe),
                                 iconSize: 35,
-                                onPressed: () {},
+                                onPressed: () {
+                                  isRepeated.value = !isRepeated.value;
+                                },
                               ),
                               IconButton(
                                 icon: Icon(Icons.replay_5),
@@ -170,29 +176,31 @@ class DetailedPlayer extends StatelessWidget {
                           ),
                         ),
                         Obx(
-                          () => 
-                          Flexible(
-                            child: SizedBox(
-                              height: 10,
-                              child: Offstage(
-                                offstage: isShowSpeedSetting.value,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    IconButton(
-                                        icon: Icon(Icons.arrow_back_ios),
-                                        iconSize: 35,
-                                        onPressed: () {
-                                          audioPlayerController.speed.value -= 0.05;
-                                        }),
-                                    IconButton(
-                                        icon: Icon(Icons.arrow_forward_ios),
-                                        iconSize: 35,
-                                        onPressed: () {
-                                          audioPlayerController.speed.value += 0.05;
-                                        }),
-                                  ],
-                                ),
+                          () => Flexible(
+                            child: Offstage(
+                              offstage: isShowSpeedSetting.value,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  IconButton(
+                                      icon: Icon(Icons.arrow_back_ios),
+                                      iconSize: 35,
+                                      onPressed: () {
+                                        audioPlayerController.speed.value -=
+                                            0.05;
+                                      }),
+                                  Text(
+                                    '${audioPlayerController.speed.value.toStringAsFixed(2)}',
+                                    style: TextStyle(fontSize: 25),
+                                  ),
+                                  IconButton(
+                                      icon: Icon(Icons.arrow_forward_ios),
+                                      iconSize: 35,
+                                      onPressed: () {
+                                        audioPlayerController.speed.value +=
+                                            0.05;
+                                      }),
+                                ],
                               ),
                             ),
                           ),
@@ -202,20 +210,37 @@ class DetailedPlayer extends StatelessWidget {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Obx(() {
-                                  // LoggerController.logger.d(
-                                  //     audioPlayerController
-                                  //         .DurationToSecondInString(
-                                  //             audioPlayerController.position));
                                   return Flexible(
                                     child: Text(
-                                        '${audioPlayerController.curPosition.value}'),
+                                      '${audioPlayerController.curPosition.value}',
+                                      style: TextStyle(fontSize: 25),
+                                    ),
                                   );
                                 }),
                                 Obx(
-                                  () => isRepeated
-                                      ? RangeSlider(
-                                          onChanged: (RangeValues value) {},
-                                          values: RangeValues(1, 2))
+                                  () => isRepeated.value
+                                      ? Flexible(
+                                          child: RangeSlider(
+                                              activeColor: Color(0xFF71B77A),
+                                              inactiveColor: Color(0xFFEFEFEF),
+                                              min: 0.0,
+                                              max: audioPlayerController
+                                                      .duration.value.inSeconds
+                                                      .toDouble() +
+                                                  1.0,
+                                              onChanged: (RangeValues value) {
+                                                rangeValues.value = value;
+                                              },
+                                              labels: RangeLabels(
+                                                rangeValues.value.start
+                                                    .round()
+                                                    .toString(),
+                                                rangeValues.value.end
+                                                    .round()
+                                                    .toString(),
+                                              ),
+                                              values: rangeValues.value),
+                                        )
                                       : Slider(
                                           activeColor: Color(0xFF71B77A),
                                           inactiveColor: Color(0xFFEFEFEF),
@@ -242,11 +267,14 @@ class DetailedPlayer extends StatelessWidget {
                                           },
                                         ),
                                 ),
-                                Text(audioPlayerController
-                                    .streams[audioPlayerController
-                                        .currentStreamIndex
-                                        .toInt()]
-                                    .long!),
+                                Text(
+                                  audioPlayerController
+                                      .streams[audioPlayerController
+                                          .currentStreamIndex
+                                          .toInt()]
+                                      .long!,
+                                  style: TextStyle(fontSize: 25),
+                                ),
                               ]),
                         ),
                         Container(),
