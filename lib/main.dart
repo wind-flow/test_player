@@ -5,9 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_media_metadata/flutter_media_metadata.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:sizer/sizer.dart';
+import 'package:test_player/controller/LoggerController.dart';
 import 'package:test_player/controller/audioController.dart';
 import 'package:test_player/controller/audioPlayerController.dart';
-import 'package:test_player/controller/loggerController.dart';
 import 'package:test_player/repository/audio_hive_repository.dart';
 import 'package:test_player/model/audio.dart';
 import 'screens/audio_ui.dart';
@@ -70,25 +70,50 @@ class MyHomePage extends StatelessWidget {
                     icon: new Icon(Icons.audio_file),
                     tooltip: 'select audio',
                     onPressed: () async {
-                      final result = await FilePicker.platform.pickFiles();
+                      FilePickerResult? result = await FilePicker.platform
+                          .pickFiles(allowMultiple: true);
 
                       if (result != null) {
-                        final _file = File(result.files.single.path!);
-                        final _metadata =
-                            await MetadataRetriever.fromFile(File(_file.path));
+                        List<File> _files =
+                            result.paths.map((path) => File(path!)).toList();
 
-                        Audio audio = Audio(
-                            id: audioPlayerController.streams.length,
-                            music: _file.path,
-                            picture: _metadata.albumArt,
-                            composer: _metadata.albumArtistName,
-                            title: _metadata.trackName,
-                            long: DurationToSecondInString(
-                                Duration(seconds: _metadata.trackDuration!)));
+                        _files.forEach((f) async {
+                          final file = File(f.path);
+                          final _metadata =
+                              await MetadataRetriever.fromFile(File(file.path));
 
-                        // audioPlayerController.streams.add(audio);
-                        // AudioController().add(audio);
-                        audioPlayerController.addPlayList(audio);
+                          Audio audio = Audio(
+                              id: audioPlayerController.streams.length,
+                              music: file.path,
+                              picture: _metadata.albumArt,
+                              composer: _metadata.albumArtistName,
+                              title: _metadata.trackName,
+                              long: DurationToSecondInString(
+                                  Duration(seconds: _metadata.trackDuration!)));
+                          audioPlayerController.addPlayList(audio);
+                        });
+
+                        // final _result = await FilePicker.platform.pickFiles();
+
+                        // if (result != null) {
+                        //   final _file = File(result.files.single.path!);
+                        //   final _metadata = await MetadataRetriever.fromFile(File(_file.path));
+
+                        // final _metadata =
+                        //     await MetadataRetriever.fromFile(File(_file.path));
+
+                        // Audio audio = Audio(
+                        //     id: audioPlayerController.streams.length,
+                        //     music: _file.path,
+                        //     picture: _metadata.albumArt,
+                        //     composer: _metadata.albumArtistName,
+                        //     title: _metadata.trackName,
+                        //     long: DurationToSecondInString(
+                        //         Duration(seconds: _metadata.trackDuration!)));
+                        // audioPlayerController.addPlayList(audio);
+                        // } else {
+                        //   // User canceled the picker
+                        // }
                       }
                     },
                   )
