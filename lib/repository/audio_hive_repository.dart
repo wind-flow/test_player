@@ -35,4 +35,8 @@ class AudioHiveRepository {
   Future audioDelete(int index) async {
     return audioBox!.deleteAt(index);
   }
+
+  Future audioDeleteAll() async {
+    return audioBox!.deleteFromDisk();
+  }
 }

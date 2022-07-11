@@ -24,4 +24,8 @@ class AudioController extends GetxController {
   void delete(int index) async {
     await audioRepository.audioDelete(index);
   }
+
+  void deleteAll() async {
+    await audioRepository.audioDeleteAll();
+  }
 }

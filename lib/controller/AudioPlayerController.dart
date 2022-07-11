@@ -172,4 +172,8 @@ class AudioPlayerController extends GetxController {
     _audioController.delete(index);
     streams.value = await _audioController.read();
   }
+
+  void deleteAll() async {
+    _audioController.deleteAll();
+  }
 }

@@ -44,7 +44,7 @@ class DetailedPlayer extends StatelessWidget {
       elevation: 3,
       onDismissed: () {
         audioPlayerController.stop();
-        audioPlayerController.isShowingPlayer(false);
+        audioPlayerController.isShowingPlayer.value = false;
       },
       curve: Curves.easeOut,
       builder: (height, percentage) {
@@ -135,7 +135,7 @@ class DetailedPlayer extends StatelessWidget {
                                 () => IconButton(
                                   icon: Icon(Icons.swipe),
                                   color: isRepeated.value
-                                      ? Colors.green
+                                      ? Colors.blue
                                       : Colors.white,
                                   iconSize: 35,
                                   onPressed: () {
@@ -176,7 +176,7 @@ class DetailedPlayer extends StatelessWidget {
                                     iconSize: 35,
                                     color: isShowSpeedSetting.value
                                         ? Colors.white
-                                        : Colors.green,
+                                        : Colors.blue,
                                     onPressed: () {
                                       isShowSpeedSetting.value =
                                           !isShowSpeedSetting.value;
@@ -228,32 +228,32 @@ class DetailedPlayer extends StatelessWidget {
                                 Obx(
                                   () => Expanded(
                                     child: isRepeated.value
-                                        ? RangeSlider(
-                                            activeColor: Color(0xFF71B77A),
-                                            inactiveColor: Color(0xFFEFEFEF),
-                                            min: 0.0,
-                                            max: audioPlayerController
-                                                    .duration.value.inSeconds
-                                                    .toDouble() +
-                                                1.0,
-                                            onChanged: (RangeValues value) {
-                                              rangeValues.value = value;
-                                            },
-                                            onChangeEnd: (value) =>
-                                                rangeValues.value = value,
-                                            labels: RangeLabels(
-                                              rangeValues.value.start
-                                                  .round()
-                                                  .toString(),
-                                              rangeValues.value.end
-                                                  .round()
-                                                  .toString(),
+                                        ? SizedBox(
+                                            height: 25,
+                                            // moving event of rangeSlider overlap scroll. So I wrapp Center widget to expand touch area.
+                                            child: RangeSlider(
+                                              activeColor: Colors.blue,
+                                              inactiveColor: Colors.white,
+                                              min: 0.0,
+                                              max: audioPlayerController
+                                                      .duration.value.inSeconds
+                                                      .toDouble() +
+                                                  1.0,
+                                              onChanged: (RangeValues value) {
+                                                rangeValues.value = value;
+                                              },
+                                              onChangeEnd: (value) {
+                                                rangeValues.value = value;
+                                                audioPlayerController
+                                                        .setPositionValue =
+                                                    value.start;
+                                              },
+                                              values: rangeValues.value,
                                             ),
-                                            values: rangeValues.value,
                                           )
                                         : Slider(
-                                            activeColor: Color(0xFF71B77A),
-                                            inactiveColor: Color(0xFFEFEFEF),
+                                            activeColor: Colors.blue,
+                                            inactiveColor: Colors.white,
                                             value: audioPlayerController
                                                 .position.value.inSeconds
                                                 .toDouble(),
@@ -262,9 +262,6 @@ class DetailedPlayer extends StatelessWidget {
                                                     .duration.value.inSeconds
                                                     .toDouble() +
                                                 1.0,
-                                            label: audioPlayerController
-                                                .position.value.inSeconds
-                                                .toString(),
                                             onChanged: (double value) {
                                               audioPlayerController
                                                   .setPositionValue = value;

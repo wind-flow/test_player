@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -6,7 +7,6 @@ import 'package:flutter_media_metadata/flutter_media_metadata.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:sizer/sizer.dart';
 import 'package:test_player/controller/LoggerController.dart';
-import 'package:test_player/controller/audioController.dart';
 import 'package:test_player/controller/audioPlayerController.dart';
 import 'package:test_player/repository/audio_hive_repository.dart';
 import 'package:test_player/model/audio.dart';
@@ -15,7 +15,7 @@ import 'widgets/player.dart';
 import 'package:get/get.dart';
 import 'package:device_preview/device_preview.dart';
 import 'constants/utils.dart';
-import 'dart:io' show Platform;
+import 'package:flutter/services.Dart' show rootBundle;
 
 void main() async {
   await Hive.initFlutter();
@@ -42,7 +42,12 @@ class MyApp extends StatelessWidget {
     return Sizer(builder: (context, orientation, deviceType) {
       return GetMaterialApp(
         title: 'DD Player',
-        theme: ThemeData.dark(),
+        theme: ThemeData(
+          brightness: Brightness.dark,
+          // sliderTheme: SliderThemeData(
+          //     rangeThumbShape: RoundRangeSliderThumbShape(
+          //         enabledThumbRadius: 20, elevation: 20)),
+        ),
         darkTheme: ThemeData.dark(),
         locale: DevicePreview.locale(context),
         builder: DevicePreview.appBuilder,
@@ -69,6 +74,7 @@ class MyHomePage extends StatelessWidget {
                   new IconButton(
                     icon: new Icon(Icons.audio_file),
                     tooltip: 'select audio',
+                    iconSize: 40,
                     onPressed: () async {
                       FilePickerResult? result = await FilePicker.platform
                           .pickFiles(allowMultiple: true);
@@ -82,15 +88,30 @@ class MyHomePage extends StatelessWidget {
                           final _metadata =
                               await MetadataRetriever.fromFile(File(file.path));
 
-                          Audio audio = Audio(
-                              id: audioPlayerController.streams.length,
-                              music: file.path,
-                              picture: _metadata.albumArt,
-                              composer: _metadata.albumArtistName,
-                              title: _metadata.trackName,
-                              long: DurationToSecondInString(
-                                  Duration(seconds: _metadata.trackDuration!)));
-                          audioPlayerController.addPlayList(audio);
+                          // print(_metadata.albumArt);
+
+                          // Uint8List stuff = Image(image: "defaultimage.jpg").toByteData().buffer.asUInt8List();
+
+                          Uint8List bytes = await rootBundle
+                                  .load('assets/images/defaultAudioImage.png')
+                              as Uint8List;
+
+                          print('${_metadata.albumArt}');
+                          print('${_metadata.albumArtistName}');
+                          print('${_metadata.trackName}');
+
+                          String _unknown = 'unKnown';
+
+                          audioPlayerController.deleteAll();
+                          // Audio audio = Audio(
+                          //     id: audioPlayerController.streams.length,
+                          //     music: file.path,
+                          //     picture: _metadata.albumArt ?? bytes,
+                          //     composer: _metadata.albumArtistName ?? _unknown,
+                          //     title: _metadata.trackName ?? _unknown,
+                          //     long: DurationToSecondInString(
+                          //         Duration(seconds: _metadata.trackDuration!)));
+                          // audioPlayerController.addPlayList(audio);
                         });
 
                         // final _result = await FilePicker.platform.pickFiles();
