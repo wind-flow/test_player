@@ -131,12 +131,17 @@ class DetailedPlayer extends StatelessWidget {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              IconButton(
-                                icon: Icon(Icons.swipe),
-                                iconSize: 35,
-                                onPressed: () {
-                                  isRepeated.value = !isRepeated.value;
-                                },
+                              Obx(
+                                () => IconButton(
+                                  icon: Icon(Icons.swipe),
+                                  color: isRepeated.value
+                                      ? Colors.green
+                                      : Colors.white,
+                                  iconSize: 35,
+                                  onPressed: () {
+                                    isRepeated.value = !isRepeated.value;
+                                  },
+                                ),
                               ),
                               IconButton(
                                 icon: Icon(Icons.replay_5),
@@ -165,13 +170,18 @@ class DetailedPlayer extends StatelessWidget {
                                     audioPlayerController.movePosition(
                                         Constants.movePostion.toDouble(), '+'),
                               ),
-                              IconButton(
-                                  icon: Icon(Icons.fast_forward),
-                                  iconSize: 35,
-                                  onPressed: () {
-                                    isShowSpeedSetting.value =
-                                        !isShowSpeedSetting.value;
-                                  }),
+                              Obx(
+                                () => IconButton(
+                                    icon: Icon(Icons.fast_forward),
+                                    iconSize: 35,
+                                    color: isShowSpeedSetting.value
+                                        ? Colors.white
+                                        : Colors.green,
+                                    onPressed: () {
+                                      isShowSpeedSetting.value =
+                                          !isShowSpeedSetting.value;
+                                    }),
+                              ),
                             ],
                           ),
                         ),
@@ -205,67 +215,68 @@ class DetailedPlayer extends StatelessWidget {
                             ),
                           ),
                         ),
-                        Flexible(
+                        Expanded(
                           child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Obx(() {
-                                  return Flexible(
-                                    child: Text(
-                                      '${audioPlayerController.curPosition.value}',
-                                      style: TextStyle(fontSize: 25),
-                                    ),
+                                  return Text(
+                                    '${audioPlayerController.curPosition.value}',
+                                    style: TextStyle(fontSize: 25),
                                   );
                                 }),
                                 Obx(
-                                  () => isRepeated.value
-                                      ? Flexible(
-                                          child: RangeSlider(
-                                              activeColor: Color(0xFF71B77A),
-                                              inactiveColor: Color(0xFFEFEFEF),
-                                              min: 0.0,
-                                              max: audioPlayerController
-                                                      .duration.value.inSeconds
-                                                      .toDouble() +
-                                                  1.0,
-                                              onChanged: (RangeValues value) {
-                                                rangeValues.value = value;
-                                              },
-                                              labels: RangeLabels(
-                                                rangeValues.value.start
-                                                    .round()
-                                                    .toString(),
-                                                rangeValues.value.end
-                                                    .round()
-                                                    .toString(),
-                                              ),
-                                              values: rangeValues.value),
-                                        )
-                                      : Slider(
-                                          activeColor: Color(0xFF71B77A),
-                                          inactiveColor: Color(0xFFEFEFEF),
-                                          value: audioPlayerController
-                                              .position.value.inSeconds
-                                              .toDouble(),
-                                          min: 0.0,
-                                          max: audioPlayerController
-                                                  .duration.value.inSeconds
-                                                  .toDouble() +
-                                              1.0,
-                                          label: audioPlayerController
-                                              .position.value.inSeconds
-                                              .toString(),
-                                          onChanged: (double value) {
-                                            audioPlayerController
-                                                .setPositionValue = value;
-                                          },
-                                          onChangeEnd: (double value) async {
-                                            audioPlayerController
-                                                .setPositionValue = value;
-                                            await audioPlayerController
-                                                .resume();
-                                          },
-                                        ),
+                                  () => Expanded(
+                                    child: isRepeated.value
+                                        ? RangeSlider(
+                                            activeColor: Color(0xFF71B77A),
+                                            inactiveColor: Color(0xFFEFEFEF),
+                                            min: 0.0,
+                                            max: audioPlayerController
+                                                    .duration.value.inSeconds
+                                                    .toDouble() +
+                                                1.0,
+                                            onChanged: (RangeValues value) {
+                                              rangeValues.value = value;
+                                            },
+                                            onChangeEnd: (value) =>
+                                                rangeValues.value = value,
+                                            labels: RangeLabels(
+                                              rangeValues.value.start
+                                                  .round()
+                                                  .toString(),
+                                              rangeValues.value.end
+                                                  .round()
+                                                  .toString(),
+                                            ),
+                                            values: rangeValues.value,
+                                          )
+                                        : Slider(
+                                            activeColor: Color(0xFF71B77A),
+                                            inactiveColor: Color(0xFFEFEFEF),
+                                            value: audioPlayerController
+                                                .position.value.inSeconds
+                                                .toDouble(),
+                                            min: 0.0,
+                                            max: audioPlayerController
+                                                    .duration.value.inSeconds
+                                                    .toDouble() +
+                                                1.0,
+                                            label: audioPlayerController
+                                                .position.value.inSeconds
+                                                .toString(),
+                                            onChanged: (double value) {
+                                              audioPlayerController
+                                                  .setPositionValue = value;
+                                            },
+                                            onChangeEnd: (double value) async {
+                                              audioPlayerController
+                                                  .setPositionValue = value;
+                                              await audioPlayerController
+                                                  .resume();
+                                            },
+                                          ),
+                                  ),
                                 ),
                                 Text(
                                   audioPlayerController
