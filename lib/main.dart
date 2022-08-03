@@ -1,9 +1,9 @@
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_media_metadata/flutter_media_metadata.dart';
+// import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:sizer/sizer.dart';
 import 'package:test_player/controller/LoggerController.dart';
@@ -14,14 +14,17 @@ import 'screens/audio_ui.dart';
 import 'widgets/player.dart';
 import 'package:get/get.dart';
 import 'package:device_preview/device_preview.dart';
-import 'constants/utils.dart';
 import 'package:flutter/services.Dart' show rootBundle;
 
+
+
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized(); // confirm Initialize FlutterApp
   await Hive.initFlutter();
   Hive.registerAdapter(AudioAdapter());
   await AudioHiveRepository().openBox();
-
+  // MobileAds.instance.initialize();
+  
   runApp(
     DevicePreview(
       enabled: !kReleaseMode,
